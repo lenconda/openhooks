@@ -1,0 +1,45 @@
+{
+  "name": "openhooks",
+  "version": "0.0.1",
+  "description": "🔨 A simple server for web hooks.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lenconda/openhooks.git"
+  },
+  "bin": {
+    "oh-server": "./bin/oh-server.js"
+  },
+  "keywords": [
+    "webhook"
+  ],
+  "author": "lenconda <i@lenconda.top>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lenconda/openhooks/issues"
+  },
+  "homepage": "https://github.com/lenconda/openhooks#readme",
+  "devDependencies": {
+    "mocha": "^6.1.2",
+    "supertest": "^4.0.2"
+  },
+  "dependencies": {
+    "better-sqlite3": "^5.4.0",
+    "commander": "^2.20.0",
+    "daemonize2": "^0.4.2",
+    "debug": "^2.6.3",
+    "forever": "^1.0.0",
+    "koa": "^2.2.0",
+    "koa-bodyparser": "^3.2.0",
+    "koa-convert": "^1.2.0",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^2.0.1",
+    "koa-onerror": "^1.2.1",
+    "koa-router": "^7.1.1",
+    "pm2": "^3.5.0",
+    "uuid": "^3.3.2"
+  }
+}

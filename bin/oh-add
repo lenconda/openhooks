@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+var Router = require('../utils/routers');
+var routersList = require('../server/routers.json');
+var program = require('commander');
+var uuidv4 = require('uuid/v4');
+var { writeFileSync } = require('fs');
+var path = require('path');
+
+program
+  .version('0.0.1')
+  .option('-d, --desc <desc>', 'Set route description')
+  .option('-c, --cmd <cmd>', 'Set command')
+  .parse(process.argv);
+
+var routers = new Router(routersList);
+
+var newRoutes = routers.add({
+  id: uuidv4(),
+  desc: program.desc || '',
+  command: program.cmd || ''
+});
+
+writeFileSync(
+  path.resolve(__dirname, '../server/routers.json'),
+  JSON.stringify(newRoutes), { encoding: 'utf-8' });
