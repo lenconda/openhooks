@@ -30,4 +30,4 @@ play
 .vscode
 .idea
 package-lock.json
-
+.nyc_*

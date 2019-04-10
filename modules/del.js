@@ -2,19 +2,21 @@ var Routers = require('../utils/routers');
 
 var routers = new Routers(__dirname, '../server/routers.json');
 
-var del = function (id) {
-  if (routers.get()[id]) {
-    var path = '/hooks/' + routers.get()[id].id;
-    routers.delete(id);
+var del = function (index) {
+  if (routers.get()[index]) {
+    var path = '/hooks/' + routers.get()[index].id;
+    routers.delete(index);
     console.log('Deleted ' + path);
+    return path;
   } else
     console.log('ID not found...');
 }
 
 var clear = function () {
   try {
-    routers.clear();
+    let result = routers.clear();
     console.log('Cleared all routers');
+    return result;
   } catch (e) {
     console.log(e.toString());
   }

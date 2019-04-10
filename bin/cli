@@ -32,13 +32,16 @@ program
   .option('-d --desc <description>', 'Add description')
   .option('-c --command <cmd>', 'Add command')
   .action(function (options) {
-    ohAdd(options.desc, options.command);
+    var id = ohAdd(options.desc, options.command);
+    console.log('Added a new path: /hooks/' + id);
   });
 
 program
   .command('ls')
   .action(function () {
-    ohLs();
+    var results = ohLs();
+    console.log('Total: ' + results.length);
+    console.table(results);
   });
 
 program

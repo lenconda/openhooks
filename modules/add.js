@@ -10,7 +10,7 @@ var add = function (desc, cmd) {
       desc: desc || '',
       command: cmd || ''
     });
-    console.log('Added /hooks/' + id);
+    return id;
   } catch (e) {
     console.log(e.toString());
   }

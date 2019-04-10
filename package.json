@@ -4,14 +4,14 @@
   "description": "🔨 A simple server for web hooks.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc mocha test/**/**/*.test.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lenconda/openhooks.git"
   },
   "bin": {
-    "oh-server": "./bin/oh-server.js"
+    "openhooks": "./bin/cli"
   },
   "keywords": [
     "webhook"
@@ -23,7 +23,11 @@
   },
   "homepage": "https://github.com/lenconda/openhooks#readme",
   "devDependencies": {
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "chai-spies": "0.7.1",
     "mocha": "^6.1.2",
+    "nyc": "^13.3.0",
     "supertest": "^4.0.2"
   },
   "dependencies": {

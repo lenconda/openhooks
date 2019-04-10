@@ -4,8 +4,7 @@ var routers = new Routers(__dirname, '../server/routers.json');
 var routes = routers.get();
 
 var ls = function () {
-  console.log('Total: ' + routes.length);
-  console.table(routes);
+  return routes;
 }
 
 module.exports = ls;

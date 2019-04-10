@@ -1,1 +1,1 @@
-[{"id":"5c107fc0-7ce5-40b5-904c-6f05ef0c147d","desc":"测试","command":"ping 127.0.0.1"},{"id":"8132b26a-9d18-48f9-bab1-451ffa4fab32","desc":"测试2","command":"ping 127.0.0.1 -c 5"}]
+[]

@@ -35,7 +35,9 @@ class Routers {
   }
 
   clear () {
-    this.writeJson([]);
+    this.routers = [];
+    this.writeJson(this.routers);
+    return this.routers;
   }
 
 }
