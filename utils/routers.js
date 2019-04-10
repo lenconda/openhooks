@@ -1,7 +1,11 @@
+var path = require('path');
+var { writeFileSync } = require('fs');
+
 class Routers {
 
-  constructor(routers) {
-    this.routers = routers;
+  constructor (directory, routers) {
+    this.path = path.resolve(directory, routers);
+    this.routers = require(this.path);
   }
 
   find (id) {
@@ -11,14 +15,15 @@ class Routers {
   }
 
   delete (idx) {
-    return this.routers.filter(function (value, index) {
+    this.routers = this.routers.filter(function (value, index) {
       return parseInt(idx) !== index;
     });
+    writeFileSync(this.path, JSON.stringify(this.routers), { encoding: 'utf-8' });
   }
 
   add (route) {
     this.routers.push(route);
-    return this.routers;
+    writeFileSync(this.path, JSON.stringify(this.routers), { encoding: 'utf-8' });
   }
 
   get () {

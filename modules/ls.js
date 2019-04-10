@@ -1,7 +1,6 @@
-var routersList = require('../server/routers.json');
 var Routers = require('../utils/routers');
 
-var routers = new Routers(routersList);
+var routers = new Routers(__dirname, '../server/routers.json');
 var routes = routers.get();
 
 var ls = function () {

@@ -1,7 +1,10 @@
+#!/usr/bin/env node
+
 var program = require('commander');
 var ohServer = require('../modules/server');
 var ohAdd = require('../modules/add');
 var ohLs = require('../modules/ls');
+var ohDel = require('../modules/del');
 
 program
   .version('0.0.1');
@@ -38,6 +41,10 @@ program
     ohLs();
   });
 
-
+program
+  .command('del <id>')
+  .action(function (id) {
+    ohDel(id);
+  });
 
 program.parse(process.argv);
