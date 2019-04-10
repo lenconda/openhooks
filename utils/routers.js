@@ -5,13 +5,13 @@ class Routers {
   }
 
   find (id) {
-    return this.routers.filter(function(value, index) {
+    return this.routers.filter(function (value, index) {
       return value.id === id;
     }).pop();
   }
 
   delete (idx) {
-    return this.routers.filter(function(value, index) {
+    return this.routers.filter(function (value, index) {
       return parseInt(idx) !== index;
     });
   }

@@ -1,0 +1,43 @@
+var program = require('commander');
+var ohServer = require('../modules/server');
+var ohAdd = require('../modules/add');
+var ohLs = require('../modules/ls');
+
+program
+  .version('0.0.1');
+
+program
+  .command('server <action>')
+  .action(function (action) {
+    switch (action) {
+      case 'start':
+        ohServer.start();
+        break;
+      case 'stop':
+        ohServer.stop();
+        break;
+      case 'restart':
+        ohServer.restart();
+        break;
+      default:
+        console.log('Param error...');
+    }
+  })
+
+program
+  .command('add')
+  .option('-d --desc <description>', 'Add description')
+  .option('-c --command <cmd>', 'Add command')
+  .action(function (options) {
+    ohAdd(options.desc, options.command);
+  });
+
+program
+  .command('ls')
+  .action(function () {
+    ohLs();
+  });
+
+
+
+program.parse(process.argv);
