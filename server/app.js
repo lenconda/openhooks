@@ -40,7 +40,7 @@ app.use(route.routes(), route.allowedMethods());
 
 // error-handling
 app.on('error', (err, ctx) => {
-
+  console.log(err.toString());
 })
 
 module.exports = app;
