@@ -3,14 +3,13 @@ var { execSync } = require('child_process');
 
 router.get('/hooks/:id', (ctx, next) => {
   try {
-    var routersList = require('../routers.json');
     var Routers = require('../../utils/routers');
-    var routers = new Routers(routersList);
+    var routers = new Routers(__dirname, '../routers.json');
     var route = routers.find(ctx.params.id);
     execSync(route.command);
-    return { ok: true, message: 'ok' };
+    ctx.body = { ok: true, message: 'ok' };
   } catch (e) {
-    return { ok: false, message: e.toString() };
+    ctx.throw(500, e.toString());
   }
 });
 

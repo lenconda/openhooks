@@ -25,12 +25,22 @@ app.use(async function (ctx, next) {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 })
 
+app.use(async function (ctx, next) {
+  try {
+    await next();
+  } catch (err) {
+    ctx.status = err.status || 500;
+    ctx.body = err.message;
+    ctx.app.emit('error', err, ctx);
+  }
+});
+
 // routes
 app.use(route.routes(), route.allowedMethods());
 
 // error-handling
 app.on('error', (err, ctx) => {
-  console.error('server error', err, ctx);
+
 })
 
 module.exports = app;
