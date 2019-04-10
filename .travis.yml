@@ -1,7 +1,12 @@
 language: node_js
 node_js:
   - "10.0"
+deploy:
+  provider: npm
+  email: "i@lenconda.top"
+  api_key: $NPM_API_TOKEN
+  on:
+    tags: true
 script:
-  - export NODE_ENV=development
   - npm install
   - npm run test
