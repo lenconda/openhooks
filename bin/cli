@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var program = require('commander');
-var ohServer = require('../modules/server');
+var OhServer = require('../modules/server');
 var ohAdd = require('../modules/add');
 var ohLs = require('../modules/ls');
 var ohDel = require('../modules/del');
@@ -10,8 +10,9 @@ program
   .version('0.0.1');
 
 program
-  .command('server <action>')
-  .action(function (action) {
+  .command('server <action> [port]')
+  .action(function (action, port) {
+    var ohServer = new OhServer(port || '5000');
     switch (action) {
       case 'start':
         ohServer.start();

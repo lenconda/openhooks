@@ -1,27 +1,34 @@
 var path = require('path');
 
-var daemon = require('daemonize2').setup({
-  main: path.resolve(__dirname, '../server/bin/server.js'),
-  name: 'OpenHooks Server',
-  pidfile: 'server.pid'
-});
+class Server {
 
-module.exports = {
+  constructor (port) {
+    this.daemon = require('daemonize2').setup({
+      main: path.resolve(__dirname, '../server/bin/server.js'),
+      name: 'OpenHooks Server',
+      pidfile: 'openhooks.pid',
+      argv: [port]
+    });
+    this.port = port;
+  }
 
-  start: function () {
-    console.log('Listening at port ' + (process.env.OH_SERVER_PORT || '5000'));
-    daemon.start();
-  },
+  start () {
+    console.log('Listening at port ' + this.port);
+    this.daemon.start();
+  }
 
-  stop: function () {
-    daemon.stop();
-  },
+  stop () {
+    this.daemon.stop();
+  }
 
-  restart: function () {
-    daemon.stop();
-    daemon.on('stopped', function () {
-      daemon.start();
+  restart () {
+    var _this = this;
+    this.daemon.stop();
+    this.daemon.on('stopped', function () {
+      _this.daemon.start();
     });
   }
 
-};
+}
+
+module.exports = Server;
