@@ -11,4 +11,14 @@ var del = function (id) {
     console.log('ID not found...');
 }
 
-module.exports = del;
+var clear = function () {
+  try {
+    routers.clear();
+    console.log('Cleared all routers');
+  } catch (e) {
+    console.log(e.toString());
+  }
+}
+
+module.exports.del = del;
+module.exports.clear = clear;

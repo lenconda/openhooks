@@ -8,6 +8,10 @@ class Routers {
     this.routers = require(this.path);
   }
 
+  writeJson (data) {
+    writeFileSync(this.path, JSON.stringify(data), { encoding: 'utf-8' });
+  }
+
   find (id) {
     return this.routers.filter(function (value, index) {
       return value.id === id;
@@ -18,16 +22,20 @@ class Routers {
     this.routers = this.routers.filter(function (value, index) {
       return parseInt(idx) !== index;
     });
-    writeFileSync(this.path, JSON.stringify(this.routers), { encoding: 'utf-8' });
+    this.writeJson(this.routers);
   }
 
   add (route) {
     this.routers.push(route);
-    writeFileSync(this.path, JSON.stringify(this.routers), { encoding: 'utf-8' });
+    this.writeJson(this.routers);
   }
 
   get () {
     return this.routers;
+  }
+
+  clear () {
+    this.writeJson([]);
   }
 
 }

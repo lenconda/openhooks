@@ -42,9 +42,15 @@ program
   });
 
 program
-  .command('del <id>')
-  .action(function (id) {
-    ohDel(id);
+  .command('del <index>')
+  .action(function (index) {
+    ohDel.del(index);
   });
+
+program
+  .command('clear')
+  .action(function () {
+    ohDel.clear();
+  })
 
 program.parse(process.argv);
