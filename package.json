@@ -31,11 +31,9 @@
     "supertest": "^4.0.2"
   },
   "dependencies": {
-    "better-sqlite3": "^5.4.0",
     "commander": "^2.20.0",
     "daemonize2": "^0.4.2",
     "debug": "^2.6.3",
-    "forever": "^1.0.0",
     "koa": "^2.2.0",
     "koa-bodyparser": "^3.2.0",
     "koa-convert": "^1.2.0",
@@ -43,7 +41,6 @@
     "koa-logger": "^2.0.1",
     "koa-onerror": "^1.2.1",
     "koa-router": "^7.1.1",
-    "pm2": "^3.5.0",
     "uuid": "^3.3.2"
   }
 }
