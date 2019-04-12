@@ -234,8 +234,8 @@ If you want to commit your changes, you are supposed to make an [pull request](h
 ## TODOS
 
 - [ ] Support JSON response customization
-- [ ] Better JSON reponse
-- [ ] Authorized webhooks
+- [x] Better JSON reponse
+- [x] Authorized webhooks
 - [ ] Webhooks notifications
 - [ ] Plugins support
 

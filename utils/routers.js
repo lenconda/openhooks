@@ -1,11 +1,15 @@
 var path = require('path');
-var { writeFileSync } = require('fs');
+var { writeFileSync, readFileSync } = require('fs');
 
 class Routers {
 
   constructor (directory, routers) {
     this.path = path.resolve(directory, routers);
-    this.routers = require(this.path);
+    this.routers = this.readJson();
+  }
+
+  readJson () {
+    return JSON.parse(readFileSync(this.path, { encoding: 'utf-8' }));
   }
 
   writeJson (data) {
@@ -38,6 +42,14 @@ class Routers {
     this.routers = [];
     this.writeJson(this.routers);
     return this.routers;
+  }
+
+  update (index, desc, updatedCmd, auth) {
+    this.routers[index].desc = desc || this.routers[index].desc;
+    this.routers[index].command = updatedCmd || this.routers[index].command;
+    this.routers[index].auth = auth === undefined ? this.routers[index].auth : JSON.parse(auth);
+    this.writeJson(this.routers);
+    return this.routers[index].id;
   }
 
 }

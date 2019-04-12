@@ -8,7 +8,8 @@ var ls = function () {
     return {
       path: '/hooks/' + value.id,
       description: value.desc,
-      command: value.command
+      command: value.command,
+      auth: value.auth
     }
   });
 }
