@@ -1,6 +1,6 @@
 {
   "name": "openhooks",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "🔨 A simple server for web hooks.",
   "main": "index.js",
   "scripts": {
