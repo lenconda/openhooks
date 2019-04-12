@@ -236,6 +236,8 @@ If you want to commit your changes, you are supposed to make an [pull request](h
 - [ ] Support JSON response customization
 - [ ] Better JSON reponse
 - [ ] Authorized webhooks
+- [ ] Webhooks notifications
+- [ ] Plugins support
 
 ## License
 
