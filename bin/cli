@@ -87,7 +87,7 @@ program
 program
   .command('update <index>')
   .description('update a webhook')
-  .option('-a --auth [boolean]', 'add command when the webhook is triggered')
+  .option('-a --auth [boolean]', 'change the authentication requirement of the webhook')
   .option('-c --new-command [cmd]', 'add command when the webhook is triggered')
   .option('-d --desc [description]', 'add description for the webhook')
   .action(function (index, options) {

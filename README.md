@@ -147,13 +147,23 @@ Total: 1
 └─────────┴───────────────────────────────────────────────┴──────────────────────────┴────────────────────┘
 ```
 
-### Trigger a Webhook
+### Update a Webhook
 
-A simple HTTP request will trigger a webhook. e.g. The webhook server is listening at `localhost:5000`, the path of the webhook supposed to be triggered is `/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134`, the following command will make it:
+Use command `update` to update a specified webhook. The detailed usage of `update` is below:
 
-```bash
-$ curl http://localhost:5000/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134
 ```
+Usage: update [options] <index>
+
+update a webhook
+
+Options:
+  -a --auth [boolean]      change the authentication requirement of the webhook
+  -c --new-command [cmd]   add command when the webhook is triggered
+  -d --desc [description]  add description for the webhook
+  -h, --help               output usage information
+```
+
+> **NOTICE**: to change the requirement of authentication, `-a` option must be specified, e.g. if the authentication of a webhook is supposed to be disabled, the command would be `openhooks update <index> -a false`.
 
 ### Delete & Clear Webhook(s)
 
@@ -180,6 +190,14 @@ Total: 0
 │ (index) │
 ├─────────┤
 └─────────┘
+```
+
+## Trigger a Webhook
+
+A simple HTTP request will trigger a webhook. e.g. The webhook server is listening at `localhost:5000`, the path of the webhook supposed to be triggered is `/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134`, the following command will make it:
+
+```bash
+$ curl http://localhost:5000/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134
 ```
 
 ## Tests

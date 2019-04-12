@@ -23,10 +23,12 @@ class Routers {
   }
 
   delete (idx) {
+    var id = this.routers[idx].id;
     this.routers = this.routers.filter(function (value, index) {
       return parseInt(idx) !== index;
     });
     this.writeJson(this.routers);
+    return id;
   }
 
   add (route) {
