@@ -140,11 +140,19 @@ Use command `ls`. This command will output a table of all of the current webhook
 ```
 $ openhooks ls
 Total: 1
-┌─────────┬────────────────────────────────────────┬──────────────────────────┬────────────────────┐
-│ (index) │                   id                   │           desc           │      command       │
-├─────────┼────────────────────────────────────────┼──────────────────────────┼────────────────────┤
-│    0    │ 'c66ee59c-7a27-47d7-948c-2a5f4d229134' │ 'Execute a shell script' │ '/path/to/exec.sh' │
-└─────────┴────────────────────────────────────────┴──────────────────────────┴────────────────────┘
+┌─────────┬───────────────────────────────────────────────┬──────────────────────────┬────────────────────┐
+│ (index) │                     path                      │       description        │      command       │
+├─────────┼───────────────────────────────────────────────┼──────────────────────────┼────────────────────┤
+│    0    │ '/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134' │ 'Execute a shell script' │ '/path/to/exec.sh' │
+└─────────┴───────────────────────────────────────────────┴──────────────────────────┴────────────────────┘
+```
+
+### Trigger a Webhook
+
+A simple HTTP request will trigger a webhook. e.g. The webhook server is listening at `localhost:5000`, the path of the webhook supposed to be triggered is `/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134`, the following command will make it:
+
+```bash
+$ curl http://localhost:5000/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134
 ```
 
 ### Delete & Clear Webhook(s)
@@ -222,6 +230,12 @@ If you want to commit your changes, you are supposed to make an [pull request](h
 ## Author(s)
 
 - lenconda <[i@lenconda.top](mailto:i@lenconda.top)> [[https://blog.lenconda.top](https://blog.lenconda.top)]
+
+## TODOS
+
+- [ ] Support JSON response customization
+- [ ] Better JSON reponse
+- [ ] Authorized webhooks
 
 ## License
 
