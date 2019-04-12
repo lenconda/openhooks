@@ -16,7 +16,7 @@ router.get('/hooks/:id', (ctx, next) => {
         ctx.throw(401, 'Access key not match');
         return;
       }
-      ctx.body = { ok: true, message: execSync(route.command) };
+      ctx.body = { ok: true, message: unescape(execSync(route.command)) };
     }
   } catch (e) {
     ctx.throw(500, e.toString());
