@@ -7,7 +7,7 @@ var ohLs = require('../modules/ls');
 var ohDel = require('../modules/del');
 
 program
-  .version('0.0.3');
+  .version('0.0.4');
 
 program
   .command('server <action> [port]')
