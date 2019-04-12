@@ -7,10 +7,11 @@ var ohLs = require('../modules/ls');
 var ohDel = require('../modules/del');
 
 program
-  .version('0.0.1');
+  .version('0.0.2');
 
 program
   .command('server <action> [port]')
+  .description('manage webhook server')
   .action(function (action, port) {
     var ohServer = new OhServer(port || '5000');
     switch (action) {
@@ -30,8 +31,9 @@ program
 
 program
   .command('add')
-  .option('-d --desc <description>', 'Add description')
-  .option('-c --command <cmd>', 'Add command')
+  .description('add a webhook')
+  .option('-d --desc <description>', 'add description for the webhook')
+  .option('-c --command <cmd>', 'add command when the webhook is triggered')
   .action(function (options) {
     var id = ohAdd(options.desc, options.command);
     console.log('Added a new path: /hooks/' + id);
@@ -39,6 +41,7 @@ program
 
 program
   .command('ls')
+  .description('list all webhooks of the server')
   .action(function () {
     var results = ohLs();
     console.log('Total: ' + results.length);
@@ -47,12 +50,14 @@ program
 
 program
   .command('del <index>')
+  .description('delete a webhook with specified index')
   .action(function (index) {
     ohDel.del(index);
   });
 
 program
   .command('clear')
+  .description('clear all webhooks')
   .action(function () {
     ohDel.clear();
   })

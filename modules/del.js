@@ -15,7 +15,7 @@ var del = function (index) {
 var clear = function () {
   try {
     let result = routers.clear();
-    console.log('Cleared all routers');
+    console.log('Cleared all webhooks');
     return result;
   } catch (e) {
     console.log(e.toString());
