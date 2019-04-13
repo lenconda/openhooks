@@ -4,6 +4,7 @@ var add = require('../modules/add');
 var path = require('path');
 var ls = require('../modules/ls');
 var { readFileSync } = require('fs');
+var { routersFile } = require('../utils/constants');
 
 describe('modules', function () {
 
@@ -27,7 +28,7 @@ describe('modules', function () {
   describe('.del.del()', function () {
     it('should be no route in list', function () {
       del(0);
-      var routerList = JSON.parse(readFileSync(path.resolve(__dirname, '../server/routers.json'), { encoding: 'utf-8' }));
+      var routerList = JSON.parse(readFileSync(path.resolve(routersFile), { encoding: 'utf-8' }));
       expect(routerList.length).to.be.equal(0);
     });
   })
