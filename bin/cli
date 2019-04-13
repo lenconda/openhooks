@@ -9,7 +9,7 @@ var ohUpdate = require('../modules/update');
 var ohKey = require('../modules/key');
 
 program
-  .version('0.2.0');
+  .version('0.2.1');
 
 program
   .command('server <action> [port]')

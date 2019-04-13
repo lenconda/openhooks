@@ -1,10 +1,11 @@
 var router = require('koa-router')();
 var { execSync } = require('child_process');
 var { routersFile, keysFile } = require('../../utils/constants');
+var Routers = require('../../utils/routers');
 
 router.get('/hooks/:id', (ctx, next) => {
   try {
-    var Routers = require('../../utils/routers');
+    console.log(ctx.params.id)
     var routers = new Routers(routersFile);
     var Keys = require('../../utils/keys');
     var keys = new Keys(keysFile);
