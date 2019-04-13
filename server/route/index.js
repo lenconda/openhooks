@@ -1,12 +1,13 @@
 var router = require('koa-router')();
 var { execSync } = require('child_process');
+var { routersFile, keysFile } = require('../../utils/constants');
 
 router.get('/hooks/:id', (ctx, next) => {
   try {
     var Routers = require('../../utils/routers');
-    var routers = new Routers(__dirname, '../routers.json');
+    var routers = new Routers(routersFile);
     var Keys = require('../../utils/keys');
-    var keys = new Keys(__dirname, '../keys.json');
+    var keys = new Keys(keysFile);
     var route = routers.find(ctx.params.id);
     if (!route) {
       ctx.throw(404, 'Not match');

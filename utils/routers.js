@@ -1,10 +1,9 @@
-var path = require('path');
 var { writeFileSync, readFileSync } = require('fs');
 
 class Routers {
 
-  constructor (directory, routers) {
-    this.path = path.resolve(directory, routers);
+  constructor (routersFilePath) {
+    this.path = routersFilePath;
     this.routers = this.readJson();
   }
 

@@ -1,6 +1,7 @@
 var Keys = require('../utils/keys');
+var { keysFile } = require('../utils/constants');
 
-var keys = new Keys(__dirname, '../server/keys.json');
+var keys = new Keys(keysFile);
 
 var generate = function () {
   try {

@@ -4,6 +4,7 @@
   "description": "🔨 A simple server for web hooks.",
   "main": "index.js",
   "scripts": {
+    "postinstall": "node scripts/init.js",
     "test": "nyc mocha test/**/**/*.test.js"
   },
   "repository": {
@@ -44,6 +45,7 @@
     "koa-logger": "^2.0.1",
     "koa-onerror": "^1.2.1",
     "koa-router": "^7.1.1",
+    "path-exists": "^4.0.0",
     "uuid": "^3.3.2"
   }
 }

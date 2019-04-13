@@ -1,11 +1,10 @@
-var path = require('path');
 var { writeFileSync, readFileSync } = require('fs');
 var uuidv1 = require('uuid/v1');
 
 class Keys {
 
-  constructor (directory, keys) {
-    this.path = path.resolve(directory, keys);
+  constructor (keysFilePath) {
+    this.path = keysFilePath;
     this.keys = this.readJson();
   }
 
