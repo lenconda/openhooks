@@ -12,7 +12,7 @@ var initializeFIle = function (path) {
 
 if (!pathExists.sync(openhooksDir)) {
   try {
-    fs.mkdirsSync(openhooksDir, {
+    fs.mkdirSync(openhooksDir, {
       recursive: true,
       mode: '0755'
     });
