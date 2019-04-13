@@ -1,10 +1,11 @@
 {
   "name": "openhooks",
-  "version": "0.2.3",
-  "description": "🔨 A simple server for web hooks.",
+  "version": "0.2.4",
+  "description": "🔱 A simple server for web hooks.",
   "main": "index.js",
   "scripts": {
-    "postinstall": "node scripts/init.js",
+    "init": "node scripts/init.js",
+    "postinstall": "npm run init",
     "test": "nyc mocha test/**/**/*.test.js"
   },
   "repository": {
