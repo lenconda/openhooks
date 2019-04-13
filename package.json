@@ -1,6 +1,6 @@
 {
   "name": "openhooks",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "🔨 A simple server for web hooks.",
   "main": "index.js",
   "scripts": {
@@ -33,6 +33,10 @@
     "mocha": "^6.1.2",
     "nyc": "^13.3.0",
     "supertest": "^4.0.2"
+  },
+  "config": {
+    "user": 0,
+    "unsafe-perm": true
   },
   "dependencies": {
     "commander": "^2.20.0",
