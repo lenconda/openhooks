@@ -1,5 +1,6 @@
 var pathExists = require('path-exists');
 var fs = require('fs');
+var fsExtra = require('fs-extra');
 var {
   openhooksDir,
   keysFile,
@@ -12,9 +13,11 @@ var initializeFIle = function (path) {
 
 if (!pathExists.sync(openhooksDir)) {
   try {
-    fs.mkdirSync(openhooksDir, { recursive: true });
-    initializeFIle(keysFile);
-    initializeFIle(routersFile);
+    fsExtra.mkdirp(openhooksDir, function (err) {
+      if (err) throw err;
+      initializeFIle(keysFile);
+      initializeFIle(routersFile);
+    });
   } catch (e) {
     throw e;
   }
