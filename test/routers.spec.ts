@@ -1,7 +1,10 @@
 import { expect } from 'chai'
-import { routersFile } from '../src/utils/constants'
 import Routers from '../src/utils/routers'
 import uuidv4 from 'uuid/v4'
+import { openhooksDir, routersFile, keysFile } from '../src/utils/constants'
+import Initializer from '../src/utils/initializer'
+
+new Initializer(openhooksDir, keysFile, routersFile).run()
 
 describe('Routers', function () {
 

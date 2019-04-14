@@ -1,6 +1,9 @@
 import { expect } from 'chai'
 import Keys from '../src/utils/keys'
-import { keysFile } from '../src/utils/constants'
+import Initializer from '../src/utils/initializer'
+import { openhooksDir, routersFile, keysFile } from '../src/utils/constants'
+
+new Initializer(openhooksDir, keysFile, routersFile).run()
 
 describe('Keys', function () {
 
