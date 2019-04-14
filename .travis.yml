@@ -6,7 +6,8 @@ node_js:
 deploy:
   provider: npm
   email: "i@lenconda.top"
-  api_key: $NPM_API_TOKEN
+  api_key: $NPM_TOKEN
+  skip_cleanup: true
   on:
     tags: true
 script:
