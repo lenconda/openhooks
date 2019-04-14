@@ -6,7 +6,7 @@ import * as keys from '../modules/keys'
 import Server from '../modules/server'
 
 program
-  .version('0.3.1')
+  .version('0.3.2')
 
 program
   .command('server <action> [port]')
