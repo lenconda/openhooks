@@ -32,6 +32,12 @@ or simply as root user:
 
 But it is NOT recommended.
 
+If your **FIRST** installation is under root, you should add `--unsafe-perm` option, like:
+
+```bash
+# npm install openhooks -g --unsafe-perm
+```
+
 After finishing this command, the OpenHooks will be successfully installed on your system. This program provides one command:
 
 ```
