@@ -3,7 +3,7 @@ var fs = require('fs');
 var {
   openhooksDir,
   keysFile,
-  routersFile } = require('../utils/constants');
+  routersFile } = require('../src/utils/constants');
 
 var initializeFIle = function (path) {
   fs.writeFileSync(path, JSON.stringify([]), { encoding: 'utf-8' });

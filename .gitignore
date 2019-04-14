@@ -31,3 +31,4 @@ play
 .idea
 package-lock.json
 .nyc_*
+lib
