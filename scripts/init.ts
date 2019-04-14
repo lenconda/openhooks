@@ -5,7 +5,7 @@ import {
   keysFile,
   routersFile } from '../src/utils/constants'
 
-const initializeFIle = path => {
+const initializeFIle = (path: string) => {
   fs.writeFileSync(path, JSON.stringify([]), { encoding: 'utf-8' })
   return
 }
