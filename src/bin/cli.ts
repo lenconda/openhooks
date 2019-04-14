@@ -4,9 +4,14 @@ import program from 'commander'
 import * as routers from '../modules/routers'
 import * as keys from '../modules/keys'
 import Server from '../modules/server'
+import inquirer from 'inquirer'
+import Initializer from '../utils/initializer'
+import { openhooksDir, routersFile, keysFile } from '../utils/constants'
+
+new Initializer(openhooksDir, keysFile, routersFile).run()
 
 program
-  .version('0.3.5')
+  .version('0.4.0')
 
 program
   .command('server <action> [port]')
@@ -55,15 +60,28 @@ program
     }
   })
 
+interface Answers {
+  auth: string
+  desc: string
+  command: string
+}
+
 program
   .command('add')
   .description('add a webhook')
-  .option('-a --auth [bool]', 'add command when the webhook is triggered')
-  .option('-c --command <cmd>', 'add command when the webhook is triggered')
-  .option('-d --desc <description>', 'add description for the webhook')
   .action(options => {
-    let id = routers.add(options.desc, options.command, options.auth)
-    console.log(`Added a new webhook: /hooks/${id}`)
+    const questions = [
+      { type: 'input', name: 'auth', message: 'Authentication requirement (false)' },
+      { type: 'input', name: 'command', message: 'The command for this webhook' },
+      { type: 'input', name: 'desc', message: 'The description for this webhook' }
+    ]
+    inquirer
+      .prompt(questions)
+      .then((answers: any) => {
+        let { desc, command, auth } = answers
+        let id = routers.add(desc || '', command || '', auth || false)
+        console.log(`Added a new webhook: /hooks/${id}`)
+      })
   })
 
 program
@@ -101,5 +119,6 @@ program
     routers.clear()
     console.log('Cleared all webhooks')
   })
+
 
 program.parse(process.argv)
