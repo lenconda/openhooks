@@ -5,7 +5,7 @@
   "main": "lib/bin/cli.js",
   "scripts": {
     "build": "tsc",
-    "init": "node scripts/init.js",
+    "init": "ts-node scripts/init.ts",
     "prepare": "npm run build",
     "postinstall": "npm run init",
     "test": "nyc mocha -r ts-node/register test/**/**/*.spec.ts"
