@@ -1,12 +1,12 @@
 {
   "name": "openhooks",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "🔱 A simple server for web hooks.",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "init": "node scripts/init.js",
-    "postinstall": "npm run build; npm run init",
+    "postinstall": "npm run init",
     "test": "nyc mocha -r ts-node/register test/**/**/*.spec.ts"
   },
   "repository": {
@@ -17,7 +17,7 @@
     "node": ">=8.12"
   },
   "bin": {
-    "openhooks": "src/bin/cli.js"
+    "openhooks": "lib/bin/cli.js"
   },
   "keywords": [
     "webhook"
