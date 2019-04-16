@@ -1,6 +1,6 @@
 {
   "name": "openhooks",
-  "version": "0.5.0",
+  "version": "0.9.1",
   "description": "🔱 A simple server for web hooks.",
   "main": "lib/bin/cli.js",
   "scripts": {
@@ -17,7 +17,9 @@
     "node": ">=8.12"
   },
   "bin": {
-    "openhooks": "lib/bin/cli.js"
+    "openhooks": "lib/bin/cli.js",
+    "openhooks-server": "lib/bin/cli_server.js",
+    "openhooks-keys": "lib/bin/cli_keys.js"
   },
   "keywords": [
     "webhook"

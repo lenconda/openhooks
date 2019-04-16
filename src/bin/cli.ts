@@ -1,101 +1,34 @@
 #!/usr/bin/env node
 
 import program from 'commander'
-import Server from '../utils/server'
 import inquirer from 'inquirer'
 import Initializer from '../utils/initializer'
 import { openhooksDir, routersFile, keysFile } from '../utils/constants'
 import Routers from '../utils/routers'
+import JSONFile from '../utils/json_file'
 import Keys from '../utils/keys'
+import path from 'path'
 
 new Initializer(openhooksDir, keysFile, routersFile).run()
 
 program
-  .version('0.5.0')
+  .version(new JSONFile(path.resolve(__dirname, '../../package.json')).read().version)
 
 program
-  .command('server <action> [port]')
-  .description('manage webhook server')
-  .option('start', 'start the server')
-  .option('stop', 'stop the server')
-  .option('restart', 'restart the server')
-  .action((option, port) => {
-    try {
-      let server = new Server(port || '5000')
-      switch (option) {
-        case 'start': server.start(); break
-        case 'stop': server.stop(); break
-        case 'restart': server.restart(); break
-        default: program.outputHelp()
-      }
-    } catch (e) {
-      console.log(`Something error with server: ${e.toString()}`)
-    }
-  })
-
-program
-  .command('key <action> [index]')
-  .description('manage access keys')
-  .option('gen', 'generate an access key')
-  .option('ls', 'list keys')
-  .option('del', 'delete an access key with index')
-  .option('clear', 'clear all keys')
-  .action( (action, index) => {
-    switch (action) {
-      case 'gen':
-        try {
-          let keyId = new Keys(keysFile).generate()
-          console.log(`Generated a new key: ${keyId}`)
-        } catch (e) {
-          console.log(`Unable to generate key: ${e.toString()}`)
-        }
-        break
-      case 'ls':
-        try {
-          let keys = new Keys(keysFile).get().map((value, index1) => {
-            return { key: value }
-          })
-          console.table(keys)
-        } catch (e) {
-          console.log(`Unable to list keys: ${e.toString()}`)
-        }
-        break
-      case 'del':
-        try {
-          let deletedKey = new Keys(keysFile).remove(parseInt(index))
-          console.log(`Deleted a key: ${deletedKey}`)
-        } catch (e) {
-          console.log(`Unable to delete the key: ${e.toString()}`)
-        }
-        break
-      case 'clear':
-        try {
-          let keys = new Keys(keysFile).clear()
-          if (keys.length === 0) console.log(`Cleard all keys`)
-          else console.log(`Something wrong when clearing keys`)
-        } catch (e) {
-          console.log(`Unable to clean keys: ${e.toString()}`)
-        }
-        break
-      default: program.outputHelp()
-    }
-  })
-
-program
-  .command('add')
-  .description('add a webhook')
+  .command('generate')
+  .description('generate a webhook')
   .action(options => {
     const questions = [
       { type: 'input', name: 'auth', message: 'Authentication requirement (false)' },
-      { type: 'input', name: 'command', message: 'The command for this webhook' },
-      { type: 'input', name: 'desc', message: 'The description for this webhook' }
+      { type: 'input', name: 'command', message: 'The command for this webhook (null)' },
+      { type: 'input', name: 'desc', message: 'The description for this webhook (null)' }
     ]
     inquirer
       .prompt(questions)
       .then((answers: any) => {
         let { desc, command, auth } = answers
-        let authBool = (JSON.parse(auth) === true ? true : false) || false
         try {
+          let authBool = auth === 'true'
           let id = new Routers(routersFile).add({
             desc: desc || '',
             command: command || '',
@@ -103,15 +36,15 @@ program
           })
           if (authBool && (new Keys(keysFile).get().length === 0))
             console.log(`There are no keys, generated a new key: ${new Keys(keysFile).generate()}`)
-          console.log(`Add a webhook: ${id}`)
+          console.log(`Generated a webhook: ${id}`)
         } catch (e) {
-          console.log(`Unable to add a webhook: ${e.toString()}`)
+          console.log(`Unable to generate a webhook: /hooks/${e.toString()}`)
         }
       })
   })
 
 program
-  .command('ls')
+  .command('list')
   .description('list all webhooks of the server')
   .action(() => {
     try {
@@ -129,7 +62,7 @@ program
   })
 
 program
-  .command('del <index>')
+  .command('delete <index>')
   .description('delete a webhook with specified index')
   .action(index => {
     try {
@@ -168,6 +101,5 @@ program
       console.log(`Unable to clear webhooks: ${e.toString()}`)
     }
   })
-
 
 program.parse(process.argv)

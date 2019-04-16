@@ -1,10 +1,13 @@
-[![Home Page](https://raw.githubusercontent.com/lenconda/openhooks/master/banner.png)](https://github.com/lenconda/openhooks)
+![Home Page](https://raw.githubusercontent.com/lenconda/openhooks/master/banner.png)
 
 🔱 A simple server for webhooks.
 
 [![Build Info](https://api.travis-ci.org/lenconda/openhooks.svg?branch=master)](https://github.com/lenconda/openhooks)
 ![npm](https://img.shields.io/npm/v/openhooks.svg)
+![ndoe version](https://img.shields.io/node/v/openhooks.svg)
+![monthly downloads](https://img.shields.io/npm/dt/openhooks.svg)
 [![license](https://img.shields.io/npm/l/openhooks.svg)](https://github.com/lenconda/openhooks/blob/master/LICENSE)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/lenconda/openhooks/issues)
 
 ## Installation
 
@@ -14,146 +17,97 @@ Notice that a [Node.js](https://nodejs.org) environment is required. The latest 
 
 The OpenHook installation command with `npm` is:
 
-```bash
+```
 $ npm install openhooks -g
 ```
 
 If the privileges of current user is not permitted to install a Node.js module globally (usually as binary commands), add a `sudo` command before. e.g.
 
-```bash
+```
 $ sudo npm install openhooks -g
 ```
 
 or simply as root user:
 
-```bash
+```
 # npm install openhooks -g
 ```
 
-But it is NOT recommended.
+which is **NOT** recommended.
 
-If your **FIRST** installation is under root, you should add `--unsafe-perm` option, like:
+After finishing this command, the OpenHooks will be successfully installed on your system. This program provides three commands:
 
-```bash
-# npm install openhooks -g --unsafe-perm
-```
-
-After finishing this command, the OpenHooks will be successfully installed on your system. This program provides one command:
-
-```
-$ openhooks
-```
+- `openhooks`
+- `openhooks-keys`
+- `openhooks-server`
 
 ## Features
 
+- RESTFul callbacks
 - Daemonized backend server
 - CRUD hooks routers without restarting server
 - Port customization supported
 
 ## Quick Start
 
-The program only provides one simple command to help users configure and start a webhook server.
+### Manage Webhooks
 
-The basic usage of this program is as below:
+Use command `openhooks` to manage hooks.
+
+The usage of this command is as below:
 
 ```
-$ openhooks -h                                                                                               
 Usage: openhooks [options] [command]
 
 Options:
-  -V, --version           output the version number
-  -h, --help              output usage information
+  -V, --version             output the version number
+  -h, --help                output usage information
 
 Commands:
-  server <action> [port]  manage webhook server
-  add [options]           add a webhook
-  ls                      list all webhooks of the server
-  del <index>             delete a webhook with specified index
-  clear                   clear all webhooks
+  generate                  generate a webhook
+  list                      list all webhooks of the server
+  delete <index>            delete a webhook with specified index
+  update [options] <index>  update a webhook
+  clear                     clear all webhooks
 ```
 
-### Start a Server
-
-Use command `server`. The `action` parameter is required and `port` parameter is optional.
-
-The `action` parameter is enumerable, contains `start|stop|restart`:
-
-Start the server:
-
-```bash
-$ openhooks server start
-Listening at port 6000
-Starting OpenHooks Server daemon...
-OpenHooks Server daemon started. PID: XXXX
-```
-
-Start the server with `port` parameter:
-
-```bash
-$ openhooks server start 6000
-Listening at port 6000
-Starting OpenHooks Server daemon...
-OpenHooks Server daemon started. PID: XXXX
-```
-
-Stop the server:
-
-```bash
-$ openhooks server stop
-Stopping OpenHooks Server daemon...
-OpenHooks Server daemon stopped.
-```
-
-Restart the server:
-
-```bash
-$ openhooks server restart
-Stopping OpenHooks Server daemon...
-OpenHooks Server daemon stopped.
-Starting OpenHooks Server daemon...
-OpenHooks Server daemon started. PID: XXXX
-```
-
-### Add a Webhook
-
-Use command `add`. Usage of `openhooks add` is as below:
+#### Generate a Webhook
 
 ```
-Usage: add [options]
-
-add a webhook
-
-Options:
-  -d --desc <description>  add description for the webhook
-  -c --command <cmd>       add command when the webhook is triggered
-  -h, --help               output usage information
+$ openhooks generate
 ```
 
-both `-d` and `-c` options are required, while `-d` option defines the webhook description and `-c` option defines the command to execute when the webhook is triggered. e.g. If add a webhook to execute `/path/to/exec.sh`, the command will be:
-
-```bash
-$ openhooks add -c "/path/to/exec.sh" -d "Execute a shell script"
-```
-
-`-c` option can also contains a system command like `curl`, `wget`, `git`, etc.
-
-> **NOTICE**: The shell script in `-c` option should be a full path, and the shell script must have the execute right. For *nix systems, use `chmod +x /path/to/exec.sh` to add the execute right to a shell script. However, it is also okay if the script does not have the execute right by specifying the shell interpreter. e.g. `/bin/bash /path/to/exec.sh`.
-
-### List All Webhooks
-
-Use command `ls`. This command will output a table of all of the current webhooks.
+This action will start an interactive interface:
 
 ```
-$ openhooks ls
-Total: 1
-┌─────────┬───────────────────────────────────────────────┬──────────────────────────┬────────────────────┐
-│ (index) │                     path                      │       description        │      command       │
-├─────────┼───────────────────────────────────────────────┼──────────────────────────┼────────────────────┤
-│    0    │ '/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134' │ 'Execute a shell script' │ '/path/to/exec.sh' │
-└─────────┴───────────────────────────────────────────────┴──────────────────────────┴────────────────────┘
+? Authentication requirement (false) true
+? The command for this webhook (null) ping 127.0.0.1 -c 1
+? The description for this webhook (null) ping test
+There are no keys, generated a new key: dda3fc50602c11e9a0833dcb0b0dbc38
+Generated a webhook: 2ab5b914-2b7b-4b98-b41a-e757219227c7
 ```
 
-### Update a Webhook
+> **NOTICE**: If there are no keys in OpenHooks configuration file, `openhooks generate` will generate an access key **automatically**
+
+#### List Webhooks
+
+```
+$ openhooks list
+```
+
+It will print a table of current webhooks:
+
+```
+Total: 2
+┌─────────┬───────────────────────────────────────────────┬─────────────┬───────────────────────┬──────┐
+│ (index) │                     path                      │ description │        command        │ auth │
+├─────────┼───────────────────────────────────────────────┼─────────────┼───────────────────────┼──────┤
+│    0    │ '/hooks/b11216bc-bc90-4edd-82c3-b588ca7219f5' │ 'ping test' │ 'ping 127.0.0.1 -c 1' │ true │
+│    1    │ '/hooks/2ab5b914-2b7b-4b98-b41a-e757219227c7' │ 'ping test' │ 'ping 127.0.0.1 -c 1' │ true │
+└─────────┴───────────────────────────────────────────────┴─────────────┴───────────────────────┴──────┘
+```
+
+#### Update a Webhook
 
 Use command `update` to update a specified webhook. The detailed usage of `update` is below:
 
@@ -171,26 +125,23 @@ Options:
 
 > **NOTICE**: to change the requirement of authentication, `-a` option must be specified, e.g. if the authentication of a webhook is supposed to be disabled, the command would be `openhooks update <index> -a false`.
 
-### Delete & Clear Webhook(s)
+#### Delete & Clear Webhooks
 
-Use command `del` to delete a webhook. The `index` option is required. `del` command will remove the webhook with specified index from `ls` output.
+Use command `delete` to delete a webhook. The `index` option is required. `delete` command will remove the webhook with specified index from `list` output.
 
 ```
-$ openhooks del 0
-Deleted /hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134
+$ openhooks delete 0
 ```
 
 Use command `clear` to remove all webhooks.
 
 ```
 $ openhooks clear
-Cleared all webhooks
 ```
 
-then `ls` will output an empty table:
+then `list` will output an empty table:
 
 ```
-$ openhooks ls
 Total: 0
 ┌─────────┐
 │ (index) │
@@ -198,31 +149,112 @@ Total: 0
 └─────────┘
 ```
 
+### Manage Keys
+
+Use command `openhooks-keys` to manage access keys.
+
+The usage of this command is as below:
+
+```
+$ openhooks-keys -h
+Usage: openhooks-keys [options] [command]
+
+Options:
+  -V, --version   output the version number
+  -h, --help      output usage information
+
+Commands:
+  generate        generate an access key
+  list            list all keys of the server
+  delete <index>  delete a key with specified index
+  clear           clear all keys
+```
+
+#### Generate a Key
+
+```
+$ openhooks-keys generate
+```
+
+#### Delete a key
+
+Use command `delete` to delete an access key. The `index` option is required. `delete` command will remove the access key with specified index from `list` output.
+
+```
+$ openhooks-keys delete 0
+```
+
+#### Clear All Keys
+
+```
+$ openhooks-keys clear
+```
+
+### Manage Server
+
+Use command `openhooks-server`. The `-a, --action` parameter is required and `-p, --port` parameter is optional.
+
+The `action` parameter is enumerable, contains `start|restart|stop`:
+
+#### Start Server
+
+```
+$ openhooks server start
+```
+
+The server will listen at `*:5000/tcp`.
+
+Start the server with `port` parameter:
+
+```
+$ openhooks server start 6000
+```
+
+The server will listen at `*:6000/tcp`
+
+#### Stop Server
+
+```
+$ openhooks server stop
+```
+
+#### Restart Server
+
+```
+$ openhooks server restart
+```
+
 ## Trigger a Webhook
 
 A simple HTTP request will trigger a webhook. e.g. The webhook server is listening at `localhost:5000`, the path of the webhook supposed to be triggered is `/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134`, the following command will make it:
 
-```bash
-$ curl http://localhost:5000/hooks/c66ee59c-7a27-47d7-948c-2a5f4d229134
+```
+$ curl http://localhost:5000/hooks/b11216bc-bc90-4edd-82c3-b588ca7219f5
+```
+
+If it is an authentication-required webhook, the command will be:
+
+```
+$ curl -H "Access-Key:dda3fc50602c11e9a0833dcb0b0dbc38" http://localhost:5000/hooks/b11216bc-bc90-4edd-82c3-b588ca7219f5
 ```
 
 ## Tests
 
 Clone this repository first:
 
-```bash
+```
 $ git clone https://github.com/lenconda/openhooks.git
 ```
 
 Be sure that the `NODE_ENV` path of system is not set to `production`, then install dependencies:
 
-```bash
+```
 $ npm install
 ```
 
 Run the test suit by following command:
 
-```bash
+```
 $ npm run test
 ```
 

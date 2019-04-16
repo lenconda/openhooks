@@ -1,5 +1,5 @@
-import { writeFileSync, readFileSync } from 'fs'
 import uuidv4 from 'uuid/v4'
+import JSONFile from '../utils/json_file'
 
 export interface WebhookRouter {
   desc: string
@@ -15,56 +15,48 @@ class Routers {
 
   constructor (routersFilePath: string) {
     this.path = routersFilePath
-    this.routers = this.readJson()
+    this.routersFile = new JSONFile(this.path)
+    this.routers = this.routersFile.read()
   }
 
   private path: string
   private routers: WebhookRouterItem[]
+  private routersFile: JSONFile
 
-  readJson () {
-    return JSON.parse(
-      readFileSync(this.path, { encoding: 'utf-8' }))
-  }
-
-  writeJson (data: WebhookRouterItem[]) {
-    writeFileSync(
-      this.path, JSON.stringify(data), { encoding: 'utf-8' })
-  }
-
-  find (id: string): WebhookRouterItem {
+  public find (id: string): WebhookRouterItem {
     return this.routers.filter(
       (value, index) => value.id === id).pop()
   }
 
-  delete (idx: number): string {
+  public delete (idx: number): string {
     let id = this.routers[idx].id
     this.routers = this.routers.filter((value, index) => idx !== index)
-    this.writeJson(this.routers)
+    this.routersFile.write(this.routers)
     return id
   }
 
-  add (route: WebhookRouter): string {
+  public add (route: WebhookRouter): string {
     let id = uuidv4()
     this.routers.push({ ...route, id })
-    this.writeJson(this.routers)
+    this.routersFile.write(this.routers)
     return id
   }
 
-  get (): WebhookRouterItem[] {
+  public get (): WebhookRouterItem[] {
     return this.routers
   }
 
-  clear (): WebhookRouterItem[] {
+  public clear (): WebhookRouterItem[] {
     this.routers = []
-    this.writeJson(this.routers)
+    this.routersFile.write(this.routers)
     return this.routers
   }
 
-  update (index: number, desc: string, updatedCmd: string, auth: string): string {
+  public update (index: number, desc: string, updatedCmd: string, auth: string): string {
     this.routers[index].desc = desc || this.routers[index].desc
     this.routers[index].command = updatedCmd || this.routers[index].command
     this.routers[index].auth = auth === undefined ? this.routers[index].auth : JSON.parse(auth)
-    this.writeJson(this.routers)
+    this.routersFile.write(this.routers)
     return this.routers[index].id
   }
 
