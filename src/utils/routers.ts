@@ -1,10 +1,14 @@
 import { writeFileSync, readFileSync } from 'fs'
+import uuidv4 from 'uuid/v4'
 
 export interface WebhookRouter {
-  id: string
   desc: string
   command: string
   auth: boolean
+}
+
+export interface WebhookRouterItem extends WebhookRouter {
+  id: string
 }
 
 class Routers {
@@ -15,19 +19,19 @@ class Routers {
   }
 
   private path: string
-  private routers: WebhookRouter[]
+  private routers: WebhookRouterItem[]
 
   readJson () {
     return JSON.parse(
       readFileSync(this.path, { encoding: 'utf-8' }))
   }
 
-  writeJson (data: WebhookRouter[]) {
+  writeJson (data: WebhookRouterItem[]) {
     writeFileSync(
       this.path, JSON.stringify(data), { encoding: 'utf-8' })
   }
 
-  find (id: string): WebhookRouter {
+  find (id: string): WebhookRouterItem {
     return this.routers.filter(
       (value, index) => value.id === id).pop()
   }
@@ -39,16 +43,18 @@ class Routers {
     return id
   }
 
-  add (route: WebhookRouter): void {
-    this.routers.push(route)
+  add (route: WebhookRouter): string {
+    let id = uuidv4()
+    this.routers.push({ ...route, id })
     this.writeJson(this.routers)
+    return id
   }
 
-  get (): WebhookRouter[] {
+  get (): WebhookRouterItem[] {
     return this.routers
   }
 
-  clear (): WebhookRouter[] {
+  clear (): WebhookRouterItem[] {
     this.routers = []
     this.writeJson(this.routers)
     return this.routers

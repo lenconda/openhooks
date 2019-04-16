@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
 import program from 'commander'
-import * as routers from '../modules/routers'
-import * as keys from '../modules/keys'
-import Server from '../modules/server'
+import Server from '../utils/server'
 import inquirer from 'inquirer'
 import Initializer from '../utils/initializer'
 import { openhooksDir, routersFile, keysFile } from '../utils/constants'
+import Routers from '../utils/routers'
+import Keys from '../utils/keys'
 
 new Initializer(openhooksDir, keysFile, routersFile).run()
 
 program
-  .version('0.4.0')
+  .version('0.5.0')
 
 program
   .command('server <action> [port]')
@@ -26,9 +26,10 @@ program
         case 'start': server.start(); break
         case 'stop': server.stop(); break
         case 'restart': server.restart(); break
+        default: program.outputHelp()
       }
     } catch (e) {
-      console.log('params: start|restart|stop')
+      console.log(`Something error with server: ${e.toString()}`)
     }
   })
 
@@ -42,29 +43,43 @@ program
   .action( (action, index) => {
     switch (action) {
       case 'gen':
-        console.log(`Generated a new key: ${keys.generate()}`)
+        try {
+          let keyId = new Keys(keysFile).generate()
+          console.log(`Generated a new key: ${keyId}`)
+        } catch (e) {
+          console.log(`Unable to generate key: ${e.toString()}`)
+        }
         break
       case 'ls':
-        console.table(keys.ls())
+        try {
+          let keys = new Keys(keysFile).get().map((value, index1) => {
+            return { key: value }
+          })
+          console.table(keys)
+        } catch (e) {
+          console.log(`Unable to list keys: ${e.toString()}`)
+        }
         break
       case 'del':
-        console.log('Deleted a key: ' + keys.remove(parseInt(index)))
+        try {
+          let deletedKey = new Keys(keysFile).remove(parseInt(index))
+          console.log(`Deleted a key: ${deletedKey}`)
+        } catch (e) {
+          console.log(`Unable to delete the key: ${e.toString()}`)
+        }
         break
       case 'clear':
-        let result = keys.clear()
-        if (result.length === 0)
-          console.log('Cleared all keys')
+        try {
+          let keys = new Keys(keysFile).clear()
+          if (keys.length === 0) console.log(`Cleard all keys`)
+          else console.log(`Something wrong when clearing keys`)
+        } catch (e) {
+          console.log(`Unable to clean keys: ${e.toString()}`)
+        }
         break
-      default:
-        console.log('params: gen|ls|del|clear')
+      default: program.outputHelp()
     }
   })
-
-interface Answers {
-  auth: string
-  desc: string
-  command: string
-}
 
 program
   .command('add')
@@ -79,8 +94,19 @@ program
       .prompt(questions)
       .then((answers: any) => {
         let { desc, command, auth } = answers
-        let id = routers.add(desc || '', command || '', auth || false)
-        console.log(`Added a new webhook: /hooks/${id}`)
+        let authBool = (JSON.parse(auth) === true ? true : false) || false
+        try {
+          let id = new Routers(routersFile).add({
+            desc: desc || '',
+            command: command || '',
+            auth: authBool
+          })
+          if (authBool && (new Keys(keysFile).get().length === 0))
+            console.log(`There are no keys, generated a new key: ${new Keys(keysFile).generate()}`)
+          console.log(`Add a webhook: ${id}`)
+        } catch (e) {
+          console.log(`Unable to add a webhook: ${e.toString()}`)
+        }
       })
   })
 
@@ -88,17 +114,30 @@ program
   .command('ls')
   .description('list all webhooks of the server')
   .action(() => {
-    let result = routers.ls()
-    console.log(`Total: ${result.length}`)
-    console.table(result)
+    try {
+      let webhooks = new Routers(routersFile).get().map((value, index) => {
+        let { id, command, auth, desc } = value
+        return {
+          path: `/hooks/${id}`,
+          description: desc, command, auth }
+      })
+      console.log(`Total: ${webhooks.length}`)
+      console.table(webhooks)
+    } catch (e) {
+      console.log(`Unable to list webhooks: ${e.toString()}`)
+    }
   })
 
 program
   .command('del <index>')
   .description('delete a webhook with specified index')
   .action(index => {
-    let result = routers.del(parseInt(index))
-    console.log(`Deleted webhook: ${result}`)
+    try {
+      let deletedId = new Routers(routersFile).delete(parseInt(index))
+      console.log(`Deleted webhook: /hooks/${deletedId}`)
+    } catch (e) {
+      console.log(`Unable to delete webhook at index ${index}: ${e.toString()}`)
+    }
   })
 
 program
@@ -108,16 +147,26 @@ program
   .option('-c --new-command [cmd]', 'add command when the webhook is triggered')
   .option('-d --desc [description]', 'add description for the webhook')
   .action((index, options) => {
-    let path = routers.update(index, options.desc, options.newCommand, options.auth)
-    console.log(`Updated webhook: ${path}`)
+    try {
+      let { desc, newCommand, auth } = options
+      let updatedId = new Routers(routersFile).update(parseInt(index), desc, newCommand, auth)
+      console.log(`Updated webhook: /hooks/${updatedId}`)
+    } catch (e) {
+      console.log(`Unable to update webhook at index ${index}: ${e.toString()}`)
+    }
   })
 
 program
   .command('clear')
   .description('clear all webhooks')
   .action(function () {
-    routers.clear()
-    console.log('Cleared all webhooks')
+    try {
+      let routers = new Routers(routersFile).clear()
+      if (routers.length === 0) console.log(`Cleared all webhooks`)
+      else console.log(`Something wrong when clearing webhooks`)
+    } catch (e) {
+      console.log(`Unable to clear webhooks: ${e.toString()}`)
+    }
   })
 
 

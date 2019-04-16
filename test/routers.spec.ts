@@ -1,6 +1,5 @@
 import { expect } from 'chai'
 import Routers from '../src/utils/routers'
-import uuidv4 from 'uuid/v4'
 import { openhooksDir, routersFile, keysFile } from '../src/utils/constants'
 import Initializer from '../src/utils/initializer'
 
@@ -17,8 +16,7 @@ describe('Routers', function () {
 
     it('should insert a route object to routers file', function () {
       var routers = new Routers(routersFile)
-      var id = uuidv4()
-      routers.add({ id, desc: 'test', command: 'test', auth: false })
+      let id = routers.add({ desc: 'test', command: 'test', auth: false })
       expect(new Routers(routersFile).get()[0].id).to.be.equal(id)
     })
 
@@ -64,7 +62,7 @@ describe('Routers', function () {
 
     it('should delete the specified router', function () {
       var routers = new Routers(routersFile)
-      routers.add({ id: uuidv4(), desc: 'del', command: 'del', auth: true })
+      routers.add({ desc: 'del', command: 'del', auth: true })
       var currentLength = routers.get().length
       var id = routers.get()[currentLength - 1].id
       var deletedId = routers.delete(currentLength - 1)
