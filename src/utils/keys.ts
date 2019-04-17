@@ -12,12 +12,12 @@ class Keys {
   private keys: string[]
   private keysFile: JSONFile
 
-  public get(): string[] {
+  get(): string[] {
     return this.keys
   }
 
-  public generate(): string {
-    let key = uuidv1()
+  generate(): string {
+    const key = uuidv1()
       .split('-')
       .join('')
     this.keys.push(key)
@@ -25,14 +25,14 @@ class Keys {
     return key
   }
 
-  public remove(idx: number): string {
-    let deletedKey = this.keys[idx]
+  remove(idx: number): string {
+    const deletedKey = this.keys[idx]
     this.keys = this.keys.filter((value, index) => idx !== index)
     this.keysFile.write(this.keys)
     return deletedKey
   }
 
-  public clear(): string[] {
+  clear(): string[] {
     this.keys = []
     this.keysFile.write(this.keys)
     return this.keys

@@ -30,7 +30,7 @@ app.use(bodyParser())
 
 if (config.isDev) app.use(logger())
 
-let port: number = parseInt(process.argv[2]) || 5000
+const port: number = parseInt(process.argv[2]) || 5000
 
 useContainer(Container)
 useKoaServer(app, {

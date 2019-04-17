@@ -37,10 +37,10 @@ program
       }
     ]
     inquirer.prompt(questions).then((answers: any) => {
-      let { desc, command, auth } = answers
+      const { desc, command, auth } = answers
       try {
-        let authBool = auth === 'true'
-        let id = new Routers(routersFile).add({
+        const authBool = auth === 'true'
+        const id = new Routers(routersFile).add({
           desc: desc || '',
           command: command || '',
           auth: authBool
@@ -63,8 +63,8 @@ program
   .description('list all webhooks of the server')
   .action(() => {
     try {
-      let webhooks = new Routers(routersFile).get().map((value, index) => {
-        let { id, command, auth, desc } = value
+      const webhooks = new Routers(routersFile).get().map((value, index) => {
+        const { id, command, auth, desc } = value
         return {
           path: `/hooks/${id}`,
           description: desc,
@@ -84,7 +84,7 @@ program
   .description('delete a webhook with specified index')
   .action(index => {
     try {
-      let deletedId = new Routers(routersFile).delete(parseInt(index))
+      const deletedId = new Routers(routersFile).delete(parseInt(index))
       console.log(`Deleted webhook: /hooks/${deletedId}`)
     } catch (e) {
       console.log(`Unable to delete webhook at index ${index}: ${e.toString()}`)
@@ -102,8 +102,8 @@ program
   .option('-d --desc [description]', 'add description for the webhook')
   .action((index, options) => {
     try {
-      let { desc, newCommand, auth } = options
-      let updatedId = new Routers(routersFile).update(
+      const { desc, newCommand, auth } = options
+      const updatedId = new Routers(routersFile).update(
         parseInt(index),
         desc,
         newCommand,
@@ -118,9 +118,9 @@ program
 program
   .command('clear')
   .description('clear all webhooks')
-  .action(function() {
+  .action(() => {
     try {
-      let routers = new Routers(routersFile).clear()
+      const routers = new Routers(routersFile).clear()
       if (routers.length === 0) console.log(`Cleared all webhooks`)
       else console.log(`Something wrong when clearing webhooks`)
     } catch (e) {

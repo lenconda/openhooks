@@ -10,12 +10,12 @@ import { Context } from 'koa'
 export default class HooksService {
   executeCommand(id: string, context: Context) {
     try {
-      let routers = new Routers(routersFile)
-      let keys = new Keys(keysFile)
-      let route = routers.find(id)
+      const routers = new Routers(routersFile)
+      const keys = new Keys(keysFile)
+      const route = routers.find(id)
       if (!route) throw new NotFoundError('Webhook not found...')
       else {
-        let key = context.request.headers['access-key']
+        const key = context.request.headers['access-key']
         if (route.auth && !keys.get().includes(key))
           throw new UnauthorizedError('No access key matches...')
         return {

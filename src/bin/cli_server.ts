@@ -17,9 +17,9 @@ program
   .option('-p, --port [port]', 'server port, default 5000')
   .parse(process.argv)
 
-let { serverAction, port } = program
+const { serverAction, port } = program
 try {
-  let server = new Server(port || '5000')
+  const server = new Server(port || '5000')
   switch (serverAction) {
     case 'start':
       server.start()

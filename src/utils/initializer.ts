@@ -31,7 +31,7 @@ class Initializer {
     fs.writeFileSync(path, JSON.stringify([]), { encoding: 'utf-8' })
   }
 
-  public run() {
+  run() {
     if (!this.appConfigDirExists) {
       try {
         this.initializeDir(this.appConfigDirPath)

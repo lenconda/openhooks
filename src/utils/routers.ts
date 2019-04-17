@@ -22,35 +22,35 @@ class Routers {
   private routers: WebhookRouterItem[]
   private routersFile: JSONFile
 
-  public find(id: string): WebhookRouterItem {
+  find(id: string): WebhookRouterItem {
     return this.routers.filter((value, index) => value.id === id).pop()
   }
 
-  public delete(idx: number): string {
-    let id = this.routers[idx].id
+  delete(idx: number): string {
+    const id = this.routers[idx].id
     this.routers = this.routers.filter((value, index) => idx !== index)
     this.routersFile.write(this.routers)
     return id
   }
 
-  public add(route: WebhookRouter): string {
-    let id = uuidv4()
+  add(route: WebhookRouter): string {
+    const id = uuidv4()
     this.routers.push({ ...route, id })
     this.routersFile.write(this.routers)
     return id
   }
 
-  public get(): WebhookRouterItem[] {
+  get(): WebhookRouterItem[] {
     return this.routers
   }
 
-  public clear(): WebhookRouterItem[] {
+  clear(): WebhookRouterItem[] {
     this.routers = []
     this.routersFile.write(this.routers)
     return this.routers
   }
 
-  public update(
+  update(
     index: number,
     desc: string,
     updatedCmd: string,

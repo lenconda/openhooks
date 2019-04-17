@@ -18,7 +18,7 @@ program
   .description('generate an access key')
   .action(options => {
     try {
-      let keyId = new Keys(keysFile).generate()
+      const keyId = new Keys(keysFile).generate()
       console.log(`Generated a new key: ${keyId}`)
     } catch (e) {
       console.log(`Unable to generate key: ${e.toString()}`)
@@ -30,7 +30,7 @@ program
   .description('list all keys of the server')
   .action(() => {
     try {
-      let keys = new Keys(keysFile).get().map((value, index1) => {
+      const keys = new Keys(keysFile).get().map((value, index1) => {
         return { key: value }
       })
       console.table(keys)
@@ -44,7 +44,7 @@ program
   .description('delete a key with specified index')
   .action(index => {
     try {
-      let deletedKey = new Keys(keysFile).remove(parseInt(index))
+      const deletedKey = new Keys(keysFile).remove(parseInt(index))
       console.log(`Deleted a key: ${deletedKey}`)
     } catch (e) {
       console.log(`Unable to delete the key: ${e.toString()}`)
@@ -54,9 +54,9 @@ program
 program
   .command('clear')
   .description('clear all keys')
-  .action(function() {
+  .action(() => {
     try {
-      let keys = new Keys(keysFile).clear()
+      const keys = new Keys(keysFile).clear()
       if (keys.length === 0) console.log(`Cleard all keys`)
       else console.log(`Something wrong when clearing keys`)
     } catch (e) {

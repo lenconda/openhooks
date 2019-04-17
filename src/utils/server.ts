@@ -14,17 +14,17 @@ class Server {
   private daemon: any
   private port: string | number
 
-  public start(): void {
+  start(): void {
     console.log(`Listening at port ${this.port}`)
     this.daemon.start()
   }
 
-  public stop(): void {
+  stop(): void {
     this.daemon.stop()
   }
 
-  public restart(): void {
-    let _this = this
+  restart(): void {
+    const _this = this
     this.daemon.stop()
     this.daemon.on('stopped', () => _this.daemon.start())
   }
