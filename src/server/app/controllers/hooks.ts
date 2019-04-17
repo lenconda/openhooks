@@ -5,13 +5,11 @@ import { Context } from 'koa'
 
 @JsonController('/')
 export default class HelloController {
-
   @Inject()
   service: HooksService
 
   @Get(':id')
-  hooks (@Param('id') id: string, @Ctx() context: Context) {
+  hooks(@Param('id') id: string, @Ctx() context: Context) {
     return this.service.executeCommand(id, context)
   }
-
 }

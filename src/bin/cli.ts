@@ -11,36 +11,51 @@ import path from 'path'
 
 new Initializer(openhooksDir, keysFile, routersFile).run()
 
-program
-  .version(new JSONFile(path.resolve(__dirname, '../../package.json')).read().version)
+program.version(
+  new JSONFile(path.resolve(__dirname, '../../package.json')).read().version
+)
 
 program
   .command('generate')
   .description('generate a webhook')
   .action(options => {
     const questions = [
-      { type: 'input', name: 'auth', message: 'Authentication requirement (false)' },
-      { type: 'input', name: 'command', message: 'The command for this webhook (null)' },
-      { type: 'input', name: 'desc', message: 'The description for this webhook (null)' }
+      {
+        type: 'input',
+        name: 'auth',
+        message: 'Authentication requirement (false)'
+      },
+      {
+        type: 'input',
+        name: 'command',
+        message: 'The command for this webhook (null)'
+      },
+      {
+        type: 'input',
+        name: 'desc',
+        message: 'The description for this webhook (null)'
+      }
     ]
-    inquirer
-      .prompt(questions)
-      .then((answers: any) => {
-        let { desc, command, auth } = answers
-        try {
-          let authBool = auth === 'true'
-          let id = new Routers(routersFile).add({
-            desc: desc || '',
-            command: command || '',
-            auth: authBool
-          })
-          if (authBool && (new Keys(keysFile).get().length === 0))
-            console.log(`There are no keys, generated a new key: ${new Keys(keysFile).generate()}`)
-          console.log(`Generated a webhook: ${id}`)
-        } catch (e) {
-          console.log(`Unable to generate a webhook: /hooks/${e.toString()}`)
-        }
-      })
+    inquirer.prompt(questions).then((answers: any) => {
+      let { desc, command, auth } = answers
+      try {
+        let authBool = auth === 'true'
+        let id = new Routers(routersFile).add({
+          desc: desc || '',
+          command: command || '',
+          auth: authBool
+        })
+        if (authBool && new Keys(keysFile).get().length === 0)
+          console.log(
+            `There are no keys, generated a new key: ${new Keys(
+              keysFile
+            ).generate()}`
+          )
+        console.log(`Generated a webhook: ${id}`)
+      } catch (e) {
+        console.log(`Unable to generate a webhook: /hooks/${e.toString()}`)
+      }
+    })
   })
 
 program
@@ -52,7 +67,10 @@ program
         let { id, command, auth, desc } = value
         return {
           path: `/hooks/${id}`,
-          description: desc, command, auth }
+          description: desc,
+          command,
+          auth
+        }
       })
       console.log(`Total: ${webhooks.length}`)
       console.table(webhooks)
@@ -76,13 +94,21 @@ program
 program
   .command('update <index>')
   .description('update a webhook')
-  .option('-a --auth [boolean]', 'change the authentication requirement of the webhook')
+  .option(
+    '-a --auth [boolean]',
+    'change the authentication requirement of the webhook'
+  )
   .option('-c --new-command [cmd]', 'add command when the webhook is triggered')
   .option('-d --desc [description]', 'add description for the webhook')
   .action((index, options) => {
     try {
       let { desc, newCommand, auth } = options
-      let updatedId = new Routers(routersFile).update(parseInt(index), desc, newCommand, auth)
+      let updatedId = new Routers(routersFile).update(
+        parseInt(index),
+        desc,
+        newCommand,
+        auth
+      )
       console.log(`Updated webhook: /hooks/${updatedId}`)
     } catch (e) {
       console.log(`Unable to update webhook at index ${index}: ${e.toString()}`)
@@ -92,7 +118,7 @@ program
 program
   .command('clear')
   .description('clear all webhooks')
-  .action(function () {
+  .action(function() {
     try {
       let routers = new Routers(routersFile).clear()
       if (routers.length === 0) console.log(`Cleared all webhooks`)

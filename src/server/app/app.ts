@@ -9,16 +9,20 @@ import config from '../config'
 
 const app = new Koa()
 
-app.use(async(ctx, next): Promise<any> => {
-  try { await next() } catch (e) {
-    ctx.status = e.status || e.httpCode || 403
-    ctx.body = {
-      status: ctx.status || 403,
-      message: e.message,
-      data: e.errors ? e.errors : {}
+app.use(
+  async (ctx, next): Promise<any> => {
+    try {
+      await next()
+    } catch (e) {
+      ctx.status = e.status || e.httpCode || 403
+      ctx.body = {
+        status: ctx.status || 403,
+        message: e.message,
+        data: e.errors ? e.errors : {}
+      }
     }
   }
-})
+)
 
 app.use(kcors())
 
@@ -37,7 +41,7 @@ useKoaServer(app, {
     paramOptions: { required: true }
   },
   defaultErrorHandler: false,
-  classTransformer: false,
+  classTransformer: false
 }).listen(port)
 
 export default app

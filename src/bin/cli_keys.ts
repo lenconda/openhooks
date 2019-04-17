@@ -9,8 +9,9 @@ import path from 'path'
 
 new Initializer(openhooksDir, keysFile, routersFile).run()
 
-program
-  .version(new JSONFile(path.resolve(__dirname, '../../package.json')).read().version)
+program.version(
+  new JSONFile(path.resolve(__dirname, '../../package.json')).read().version
+)
 
 program
   .command('generate')
@@ -53,7 +54,7 @@ program
 program
   .command('clear')
   .description('clear all keys')
-  .action(function () {
+  .action(function() {
     try {
       let keys = new Keys(keysFile).clear()
       if (keys.length === 0) console.log(`Cleard all keys`)

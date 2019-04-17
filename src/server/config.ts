@@ -4,7 +4,7 @@ const config = {
   env: env,
   isProduction: env.toLowerCase() === 'production',
   isDev: env.toLowerCase() === 'development',
-  isTest: env.toLowerCase() === 'test',
+  isTest: env.toLowerCase() === 'test'
 }
 
 export default config
