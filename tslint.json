@@ -33,6 +33,7 @@
       "check-else",
       "check-whitespace"
     ],
+    "semi": false,
     "quotemark": [
       true,
       "single"
