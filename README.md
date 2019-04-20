@@ -37,8 +37,8 @@ which is **NOT** recommended.
 
 After finishing this command, the OpenHooks will be successfully installed on your system. This program provides three commands:
 
-- `openhooks`
-- `openhooks-keys`
+- `openhooks-router`
+- `openhooks-key`
 - `openhooks-server`
 
 ## Features
@@ -52,19 +52,19 @@ After finishing this command, the OpenHooks will be successfully installed on yo
 
 ### Manage Webhooks
 
-Use command `openhooks` to manage hooks.
+Use command `openhooks-router` to manage hooks.
 
 The usage of this command is as below:
 
 ```
-Usage: openhooks [options] [command]
+Usage: openhooks-router [options] [command]
 
 Options:
   -V, --version             output the version number
   -h, --help                output usage information
 
 Commands:
-  generate                  generate a webhook
+  generate                  generate route for a webhook
   list                      list all webhooks of the server
   delete <index>            delete a webhook with specified index
   update [options] <index>  update a webhook
@@ -74,7 +74,7 @@ Commands:
 #### Generate a Webhook
 
 ```
-$ openhooks generate
+$ openhooks-router generate
 ```
 
 This action will start an interactive interface:
@@ -87,12 +87,12 @@ There are no keys, generated a new key: dda3fc50602c11e9a0833dcb0b0dbc38
 Generated a webhook: 2ab5b914-2b7b-4b98-b41a-e757219227c7
 ```
 
-> **NOTICE**: If there are no keys in OpenHooks configuration file, `openhooks generate` will generate an access key **automatically**
+> **NOTICE**: If there are no keys in OpenHooks configuration file, `openhooks-router generate` will generate an access key **automatically**
 
 #### List Webhooks
 
 ```
-$ openhooks list
+$ openhooks-router list
 ```
 
 It will print a table of current webhooks:
@@ -123,20 +123,20 @@ Options:
   -h, --help               output usage information
 ```
 
-> **NOTICE**: to change the requirement of authentication, `-a` option must be specified, e.g. if the authentication of a webhook is supposed to be disabled, the command would be `openhooks update <index> -a false`.
+> **NOTICE**: to change the requirement of authentication, `-a` option must be specified, e.g. if the authentication of a webhook is supposed to be disabled, the command would be `openhooks-router update <index> -a false`.
 
 #### Delete & Clear Webhooks
 
 Use command `delete` to delete a webhook. The `index` option is required. `delete` command will remove the webhook with specified index from `list` output.
 
 ```
-$ openhooks delete 0
+$ openhooks-router delete 0
 ```
 
 Use command `clear` to remove all webhooks.
 
 ```
-$ openhooks clear
+$ openhooks-router clear
 ```
 
 then `list` will output an empty table:
@@ -151,13 +151,13 @@ Total: 0
 
 ### Manage Keys
 
-Use command `openhooks-keys` to manage access keys.
+Use command `openhooks-key` to manage access keys.
 
 The usage of this command is as below:
 
 ```
-$ openhooks-keys -h
-Usage: openhooks-keys [options] [command]
+$ openhooks-key -h
+Usage: openhooks-key [options] [command]
 
 Options:
   -V, --version   output the version number
@@ -173,7 +173,7 @@ Commands:
 #### Generate a Key
 
 ```
-$ openhooks-keys generate
+$ openhooks-key generate
 ```
 
 #### Delete a key
@@ -181,13 +181,13 @@ $ openhooks-keys generate
 Use command `delete` to delete an access key. The `index` option is required. `delete` command will remove the access key with specified index from `list` output.
 
 ```
-$ openhooks-keys delete 0
+$ openhooks-key delete 0
 ```
 
 #### Clear All Keys
 
 ```
-$ openhooks-keys clear
+$ openhooks-key clear
 ```
 
 ### Manage Server
@@ -199,7 +199,7 @@ The `action` parameter is enumerable, contains `start|restart|stop`:
 #### Start Server
 
 ```
-$ openhooks server start
+$ openhooks-server start
 ```
 
 The server will listen at `*:5000/tcp`.
@@ -207,7 +207,7 @@ The server will listen at `*:5000/tcp`.
 Start the server with `port` parameter:
 
 ```
-$ openhooks server start 6000
+$ openhooks-server start 6000
 ```
 
 The server will listen at `*:6000/tcp`
@@ -215,13 +215,13 @@ The server will listen at `*:6000/tcp`
 #### Stop Server
 
 ```
-$ openhooks server stop
+$ openhooks-server stop
 ```
 
 #### Restart Server
 
 ```
-$ openhooks server restart
+$ openhooks-server restart
 ```
 
 ## Trigger a Webhook

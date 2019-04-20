@@ -17,7 +17,7 @@ program.version(
 
 program
   .command('generate')
-  .description('generate a webhook')
+  .description('generate route for a webhook')
   .action(options => {
     const questions = [
       {
