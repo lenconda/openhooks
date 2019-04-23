@@ -2,7 +2,7 @@ import pathExists from 'path-exists'
 import path from 'path'
 import fs from 'fs'
 import fsExtra from 'fs-extra'
-const testDir = path.resolve(__dirname, '../../.test')
+import { databaseTestFile, testDir } from './constants'
 const databaseSrcPath = path.resolve(__dirname, '../../openhooks.db')
 
 class Initializer {
@@ -31,13 +31,8 @@ class Initializer {
     try {
       if (test) {
         if (!pathExists.sync(testDir)) this.initializeDir(testDir)
-        if (
-          !pathExists.sync(path.resolve(__dirname, '../../.test/openhooks.db'))
-        )
-          this.initializeFile(
-            databaseSrcPath,
-            path.resolve(testDir, 'openhooks.db')
-          )
+        if (!pathExists.sync(databaseTestFile))
+          this.initializeFile(databaseSrcPath, databaseTestFile)
       } else {
         if (!this.appConfigDirExists) this.initializeDir(this.appConfigDirPath)
         if (!this.databaseFileExists)

@@ -1,22 +1,27 @@
 import { expect } from 'chai'
-import Routers, {
-  WebhookRouterItem,
-  WebhookRouterBase
-} from '../src/utils/routers'
-import { openhooksDir, databaseFile } from '../src/utils/constants'
+import Routers, { WebhookRouterBase } from '../src/utils/routers'
+import { testDir, databaseTestFile } from '../src/utils/constants'
 import Initializer from '../src/utils/initializer'
 
-new Initializer(openhooksDir, databaseFile).run(true)
-
 describe('Routers', () => {
+  before(() => {
+    console.log('Initializing...')
+    new Initializer(testDir, databaseTestFile).run(true)
+  })
+
+  after(() => {
+    console.log('Clearing...')
+    new Initializer(testDir, databaseTestFile).clearTest()
+  })
+
   it('should be a class', async () => {
-    const routers = new Routers(databaseFile)
+    const routers = new Routers(databaseTestFile)
     expect(routers).to.be.instanceOf(Routers)
   })
 
   describe('Routers.add', () => {
     it('should insert a route object to routers file', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       const id = await routers.add(<WebhookRouterBase>{
         desc: 'test',
         command: 'test',
@@ -29,24 +34,24 @@ describe('Routers', () => {
 
   describe('Routers.get', () => {
     it('should be a function', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       expect(routers.get).to.be.a('function')
     })
 
     it('should return an array of routers', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       expect(await routers.get()).to.be.an('array')
     })
   })
 
   describe('Routers.update', () => {
     it('should be a function', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       expect(routers.update).to.be.a('function')
     })
 
     it('should update the specified router', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       const id = await routers.add(<WebhookRouterBase>{
         desc: 'test',
         command: 'test',
@@ -66,12 +71,12 @@ describe('Routers', () => {
 
   describe('Routers.delete', () => {
     it('should be a function', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       expect(routers.delete).to.be.a('function')
     })
 
     it('should delete the specified router', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       const createdId = await routers.add({
         desc: 'del',
         command: 'del',
@@ -89,12 +94,12 @@ describe('Routers', () => {
 
   describe('Routers.clear', () => {
     it('should be a function', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       expect(routers.clear).to.be.a('function')
     })
 
     it('should clear all routers', async () => {
-      const routers = new Routers(databaseFile)
+      const routers = new Routers(databaseTestFile)
       await routers.clear()
       const { length } = await routers.get()
       expect(length).to.be.equal(0)
