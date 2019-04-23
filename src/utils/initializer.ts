@@ -1,52 +1,58 @@
 import pathExists from 'path-exists'
+import path from 'path'
 import fs from 'fs'
+import fsExtra from 'fs-extra'
+const testDir = path.resolve(__dirname, '../../.test')
+const databaseSrcPath = path.resolve(__dirname, '../../openhooks.db')
 
 class Initializer {
-  constructor(
-    appConfigDir: string,
-    keysFilePath: string,
-    routersFilePath: string
-  ) {
+  constructor(appConfigDir: string, databaseFilePath: string) {
     this.appConfigDirPath = appConfigDir
-    this.routersFilePath = routersFilePath
-    this.keysFilePath = keysFilePath
     this.appConfigDirExists = pathExists.sync(appConfigDir)
-    this.routersFileExists = pathExists.sync(routersFilePath)
-    this.keysFileExists = pathExists.sync(keysFilePath)
+    this.databaseFilePath = databaseFilePath
+    this.databaseFileExists = pathExists.sync(databaseFilePath)
   }
 
   private appConfigDirPath: string
-  private routersFilePath: string
-  private keysFilePath: string
+  private databaseFilePath: string
 
   private appConfigDirExists: boolean
-  private routersFileExists: boolean
-  private keysFileExists: boolean
+  private databaseFileExists: boolean
 
   private initializeDir(path: string) {
     fs.mkdirSync(path, { recursive: true })
   }
 
-  private initializeFile(path: string) {
-    fs.writeFileSync(path, JSON.stringify([]), { encoding: 'utf-8' })
+  private initializeFile(sourcePath: string, destinationPath: string) {
+    fs.copyFileSync(sourcePath, destinationPath)
   }
 
-  run() {
-    if (!this.appConfigDirExists) {
-      try {
-        this.initializeDir(this.appConfigDirPath)
-        this.initializeFile(this.routersFilePath)
-        this.initializeFile(this.keysFilePath)
-      } catch (e) {
-        throw e
+  run(test: boolean = false) {
+    try {
+      if (test) {
+        if (!pathExists.sync(testDir)) this.initializeDir(testDir)
+        if (
+          !pathExists.sync(path.resolve(__dirname, '../../.test/openhooks.db'))
+        )
+          this.initializeFile(
+            databaseSrcPath,
+            path.resolve(testDir, 'openhooks.db')
+          )
+      } else {
+        if (!this.appConfigDirExists) this.initializeDir(this.appConfigDirPath)
+        if (!this.databaseFileExists)
+          this.initializeFile(databaseSrcPath, this.databaseFilePath)
       }
-    } else {
-      try {
-        if (!this.keysFileExists) this.initializeFile(this.keysFilePath)
-        if (!this.routersFileExists) this.initializeFile(this.routersFilePath)
-      } catch (e) {
-        throw e
-      }
+    } catch (e) {
+      throw e
+    }
+  }
+
+  clearTest() {
+    try {
+      fsExtra.removeSync(testDir)
+    } catch (e) {
+      throw e
     }
   }
 }

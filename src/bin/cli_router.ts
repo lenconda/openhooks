@@ -3,13 +3,14 @@
 import program from 'commander'
 import inquirer from 'inquirer'
 import Initializer from '../utils/initializer'
-import { openhooksDir, routersFile, keysFile } from '../utils/constants'
+import { openhooksDir, databaseFile } from '../utils/constants'
 import Routers from '../utils/routers'
 import JSONFile from '../utils/json_file'
 import Keys from '../utils/keys'
 import path from 'path'
+import moment from 'moment'
 
-new Initializer(openhooksDir, keysFile, routersFile).run()
+new Initializer(openhooksDir, databaseFile).run()
 
 program.version(
   new JSONFile(path.resolve(__dirname, '../../package.json')).read().version
@@ -36,19 +37,20 @@ program
         message: 'The description for this webhook (null)'
       }
     ]
-    inquirer.prompt(questions).then((answers: any) => {
+    inquirer.prompt(questions).then(async (answers: any) => {
       const { desc, command, auth } = answers
       try {
         const authBool = auth === 'true'
-        const id = new Routers(routersFile).add({
+        const id = await new Routers(databaseFile).add({
           desc: desc || '',
           command: command || '',
           auth: authBool
         })
-        if (authBool && new Keys(keysFile).get().length === 0)
+        const { length } = await new Keys(databaseFile).get()
+        if (authBool && length === 0)
           console.log(
-            `There are no keys, generated a new key: ${new Keys(
-              keysFile
+            `There are no keys, generated a new key: ${await new Keys(
+              databaseFile
             ).generate()}`
           )
         console.log(`Generated a webhook: ${id}`)
@@ -61,15 +63,20 @@ program
 program
   .command('list')
   .description('list all webhooks of the server')
-  .action(() => {
+  .action(async () => {
     try {
-      const webhooks = new Routers(routersFile).get().map((value, index) => {
-        const { id, command, auth, desc } = value
+      const results = await new Routers(databaseFile).get()
+      const webhooks = results.map((value, index) => {
+        const { path, command, auth, desc, createTime, updateTime } = value
         return {
-          path: `/hooks/${id}`,
+          path,
           description: desc,
           command,
-          auth
+          auth,
+          createTime: moment(createTime).format('YYYY-MM-DD HH:mm:ss'),
+          updateTime: updateTime
+            ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss')
+            : null
         }
       })
       console.log(`Total: ${webhooks.length}`)
@@ -80,19 +87,19 @@ program
   })
 
 program
-  .command('delete <index>')
+  .command('delete <uuid>')
   .description('delete a webhook with specified index')
-  .action(index => {
+  .action(async uuid => {
     try {
-      const deletedId = new Routers(routersFile).delete(parseInt(index))
+      const deletedId = await new Routers(databaseFile).delete(uuid)
       console.log(`Deleted webhook: /hooks/${deletedId}`)
     } catch (e) {
-      console.log(`Unable to delete webhook at index ${index}: ${e.toString()}`)
+      console.log(`Unable to delete webhook with uuid ${uuid}: ${e.toString()}`)
     }
   })
 
 program
-  .command('update <index>')
+  .command('update <uuid>')
   .description('update a webhook')
   .option(
     '-a --auth [boolean]',
@@ -100,27 +107,26 @@ program
   )
   .option('-c --new-command [cmd]', 'add command when the webhook is triggered')
   .option('-d --desc [description]', 'add description for the webhook')
-  .action((index, options) => {
+  .action(async (uuid, options) => {
     try {
       const { desc, newCommand, auth } = options
-      const updatedId = new Routers(routersFile).update(
-        parseInt(index),
-        desc,
-        newCommand,
-        auth
-      )
+      const updatedId = await new Routers(databaseFile).update(uuid, {
+        updateCmd: newCommand,
+        auth,
+        desc
+      })
       console.log(`Updated webhook: /hooks/${updatedId}`)
     } catch (e) {
-      console.log(`Unable to update webhook at index ${index}: ${e.toString()}`)
+      console.log(`Unable to update webhook with uuid ${uuid}: ${e.toString()}`)
     }
   })
 
 program
   .command('clear')
   .description('clear all webhooks')
-  .action(() => {
+  .action(async () => {
     try {
-      const routers = new Routers(routersFile).clear()
+      const routers = await new Routers(databaseFile).clear()
       if (routers.length === 0) console.log(`Cleared all webhooks`)
       else console.log(`Something wrong when clearing webhooks`)
     } catch (e) {

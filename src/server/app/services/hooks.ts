@@ -1,6 +1,6 @@
 import { Service } from 'typedi'
 import { execSync } from 'child_process'
-import { routersFile, keysFile } from '../../../utils/constants'
+import { databaseFile } from '../../../utils/constants'
 import Routers from '../../../utils/routers'
 import Keys from '../../../utils/keys'
 import { NotFoundError, UnauthorizedError } from 'routing-controllers'
@@ -8,15 +8,16 @@ import { Context } from 'koa'
 
 @Service()
 export default class HooksService {
-  executeCommand(id: string, context: Context) {
+  async executeCommand(id: string, context: Context) {
     try {
-      const routers = new Routers(routersFile)
-      const keys = new Keys(keysFile)
-      const route = routers.find(id)
-      if (!route) throw new NotFoundError('Webhook not found...')
-      else {
+      const route = await new Routers(databaseFile).find(id)
+      if (!route) {
+        throw new NotFoundError('Webhook not found...')
+      } else {
         const key = context.request.headers['access-key']
-        if (route.auth && !keys.get().includes(key))
+        const keyRows = await new Keys(databaseFile).get()
+        const keys = keyRows.map((value, index) => value.key)
+        if (route.auth && !keys.includes(key))
           throw new UnauthorizedError('No access key matches...')
         return {
           ok: true,

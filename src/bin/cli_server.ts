@@ -3,11 +3,11 @@
 import program from 'commander'
 import Server from '../utils/server'
 import Initializer from '../utils/initializer'
-import { openhooksDir, routersFile, keysFile } from '../utils/constants'
+import { openhooksDir, databaseFile } from '../utils/constants'
 import JSONFile from '../utils/json_file'
 import path from 'path'
 
-new Initializer(openhooksDir, keysFile, routersFile).run()
+new Initializer(openhooksDir, databaseFile).run()
 
 program
   .version(

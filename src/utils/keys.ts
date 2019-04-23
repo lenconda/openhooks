@@ -1,41 +1,58 @@
 import uuidv1 from 'uuid/v1'
-import JSONFile from '../utils/json_file'
+import Database from '../utils/database'
 
-class Keys {
+interface KeysResult {
+  key: string
+  createTime: number
+}
+
+class Keys extends Database {
   constructor(keysFilePath: string) {
-    this.path = keysFilePath
-    this.keysFile = new JSONFile(this.path)
-    this.keys = this.keysFile.read()
+    super(keysFilePath)
   }
 
-  private path: string
-  private keys: string[]
-  private keysFile: JSONFile
-
-  get(): string[] {
-    return this.keys
+  async get(): Promise<KeysResult[]> {
+    return new Promise<KeysResult[]>(async (resolve, reject) => {
+      const results = await this.dbAll('SELECT * FROM oh_keys')
+      resolve(
+        results.map((value, index) => {
+          return {
+            key: value.value,
+            createTime: parseInt(value.create_time)
+          }
+        })
+      )
+    })
   }
 
-  generate(): string {
-    const key = uuidv1()
-      .split('-')
-      .join('')
-    this.keys.push(key)
-    this.keysFile.write(this.keys)
-    return key
+  async generate(): Promise<string> {
+    return new Promise<string>(async (resolve, reject) => {
+      const generatedKey = uuidv1()
+        .split('-')
+        .join('')
+      await this.dbRun(
+        `INSERT INTO oh_keys(value, create_time) VALUES ($keyValue, $keyCreateTime)`,
+        {
+          $keyValue: generatedKey,
+          $keyCreateTime: Date.parse(new Date().toString())
+        }
+      )
+      resolve(generatedKey)
+    })
   }
 
-  remove(idx: number): string {
-    const deletedKey = this.keys[idx]
-    this.keys = this.keys.filter((value, index) => idx !== index)
-    this.keysFile.write(this.keys)
-    return deletedKey
+  async remove(value: string): Promise<string> {
+    return new Promise<string>(async (resolve, reject) => {
+      await this.dbRun(`DELETE FROM oh_keys WHERE value = "${value}"`)
+      resolve(value)
+    })
   }
 
-  clear(): string[] {
-    this.keys = []
-    this.keysFile.write(this.keys)
-    return this.keys
+  async clear(): Promise<any[]> {
+    return new Promise<any[]>(async (resolve, reject) => {
+      await this.dbRun(`DELETE FROM oh_keys`)
+      resolve([])
+    })
   }
 }
 
