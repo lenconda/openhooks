@@ -1,4 +1,6 @@
 language: node_js
+notifications:
+  email: true
 node_js:
   - '10.0'
   - '9.11'
