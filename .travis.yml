@@ -1,11 +1,10 @@
 language: node_js
 node_js:
-  - "10.0"
-  - "9.11"
-  - "8.2"
+  - '10.0'
+  - '9.11'
 deploy:
   provider: npm
-  email: "i@lenconda.top"
+  email: 'i@lenconda.top'
   api_key: $NPM_TOKEN
   skip_cleanup: true
   on:
