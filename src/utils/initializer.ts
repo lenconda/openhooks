@@ -1,16 +1,15 @@
 import pathExists from 'path-exists'
-import path from 'path'
 import fs from 'fs'
 import fsExtra from 'fs-extra'
-import { databaseTestFile, testDir } from './constants'
-const databaseSrcPath = path.resolve(__dirname, '../../openhooks.db')
+import {
+  databaseTestFile, testDir, openhooksDir, databaseFile, databaseSrcPath } from './constants'
 
 class Initializer {
-  constructor(appConfigDir: string, databaseFilePath: string) {
-    this.appConfigDirPath = appConfigDir
-    this.appConfigDirExists = pathExists.sync(appConfigDir)
-    this.databaseFilePath = databaseFilePath
-    this.databaseFileExists = pathExists.sync(databaseFilePath)
+  constructor() {
+    this.appConfigDirPath = openhooksDir
+    this.appConfigDirExists = pathExists.sync(openhooksDir)
+    this.databaseFilePath = databaseFile
+    this.databaseFileExists = pathExists.sync(databaseFile)
   }
 
   private appConfigDirPath: string
@@ -27,7 +26,12 @@ class Initializer {
     fs.copyFileSync(sourcePath, destinationPath)
   }
 
-  run(test: boolean = false) {
+  run() {
+    const isTest = (process.env.NODE_ENV || 'prod') === 'test'
+    this.init(isTest)
+  }
+
+  init(test: boolean = false) {
     try {
       if (test) {
         if (!pathExists.sync(testDir)) this.initializeDir(testDir)

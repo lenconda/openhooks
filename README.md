@@ -81,10 +81,10 @@ This action will start an interactive interface:
 
 ```
 ? Authentication requirement (false) true
-? The command for this webhook (null) ping 127.0.0.1 -c 1
-? The description for this webhook (null) ping test
-There are no keys, generated a new key: dda3fc50602c11e9a0833dcb0b0dbc38
-Generated a webhook: 2ab5b914-2b7b-4b98-b41a-e757219227c7
+? The command for this webhook (null) cd /workdir/app; git pull; docker-compose up -d --build;
+? The description for this webhook (null) rebuild project
+There are no keys, generated a new key: 72f4203069cb11e9a734e3dd813b8fd2
+Generated a webhook: /hooks/96b2804a215247d383151f59f81ce5cf
 ```
 
 > **NOTICE**: If there are no keys in OpenHooks configuration file, `openhooks-router generate` will generate an access key **automatically**
@@ -99,12 +99,12 @@ It will print a table of current webhooks:
 
 ```
 Total: 2
-┌─────────┬───────────────────────────────────────────────┬─────────────┬───────────────────────┬──────┐
-│ (index) │                     path                      │ description │        command        │ auth │
-├─────────┼───────────────────────────────────────────────┼─────────────┼───────────────────────┼──────┤
-│    0    │ '/hooks/b11216bc-bc90-4edd-82c3-b588ca7219f5' │ 'ping test' │ 'ping 127.0.0.1 -c 1' │ true │
-│    1    │ '/hooks/2ab5b914-2b7b-4b98-b41a-e757219227c7' │ 'ping test' │ 'ping 127.0.0.1 -c 1' │ true │
-└─────────┴───────────────────────────────────────────────┴─────────────┴───────────────────────┴──────┘
+┌─────────┬───────────────────────────────────────────┬───────────────────┬────────────────────────────────────────────────────────────┬───────┬───────────────────────┬────────────┐
+│ (index) │                   path                    │    description    │                          command                           │ auth  │      createTime       │ updateTime │
+├─────────┼───────────────────────────────────────────┼───────────────────┼────────────────────────────────────────────────────────────┼───────┼───────────────────────┼────────────┤
+│    0    │ '/hooks/96b2804a215247d383151f59f81ce5cf' │ 'rebuild project' │ 'cd /workdir/app; git pull; docker-compose up -d --build;' │ true  │ '2019-04-28 23:36:53' │    null    │
+│    1    │ '/hooks/5c5069183e884380968e28784c18f66a' │    'ping test'    │                 'ping www.google.com -c 5'                 │ false │ '2019-04-28 23:38:22' │    null    │
+└─────────┴───────────────────────────────────────────┴───────────────────┴────────────────────────────────────────────────────────────┴───────┴───────────────────────┴────────────┘
 ```
 
 #### Update a Webhook
@@ -168,6 +168,21 @@ Commands:
   list            list all keys of the server
   delete <index>  delete a key with specified index
   clear           clear all keys
+```
+
+#### List All Keys
+
+```
+$ openhooks-key list
+```
+
+```
+Total: 1
+┌─────────┬────────────────────────────────────┬───────────────────────┐
+│ (index) │                key                 │      createTime       │
+├─────────┼────────────────────────────────────┼───────────────────────┤
+│    0    │ '72f4203069cb11e9a734e3dd813b8fd2' │ '2019-04-28 23:36:53' │
+└─────────┴────────────────────────────────────┴───────────────────────┘
 ```
 
 #### Generate a Key

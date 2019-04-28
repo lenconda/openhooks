@@ -1,27 +1,26 @@
 import { expect } from 'chai'
 import Routers, { WebhookRouterBase } from '../src/utils/routers'
-import { testDir, databaseTestFile } from '../src/utils/constants'
 import Initializer from '../src/utils/initializer'
 
 describe('Routers', () => {
   before(() => {
     console.log('Initializing...')
-    new Initializer(testDir, databaseTestFile).run(true)
+    new Initializer().run()
   })
 
   after(() => {
     console.log('Clearing...')
-    new Initializer(testDir, databaseTestFile).clearTest()
+    new Initializer().clearTest()
   })
 
   it('should be a class', async () => {
-    const routers = new Routers(databaseTestFile)
+    const routers = new Routers()
     expect(routers).to.be.instanceOf(Routers)
   })
 
   describe('Routers.add', () => {
     it('should insert a route object to routers file', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       const id = await routers.add(<WebhookRouterBase>{
         desc: 'test',
         command: 'test',
@@ -34,24 +33,24 @@ describe('Routers', () => {
 
   describe('Routers.get', () => {
     it('should be a function', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       expect(routers.get).to.be.a('function')
     })
 
     it('should return an array of routers', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       expect(await routers.get()).to.be.an('array')
     })
   })
 
   describe('Routers.update', () => {
     it('should be a function', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       expect(routers.update).to.be.a('function')
     })
 
     it('should update the specified router', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       const id = await routers.add(<WebhookRouterBase>{
         desc: 'test',
         command: 'test',
@@ -71,12 +70,12 @@ describe('Routers', () => {
 
   describe('Routers.delete', () => {
     it('should be a function', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       expect(routers.delete).to.be.a('function')
     })
 
     it('should delete the specified router', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       const createdId = await routers.add({
         desc: 'del',
         command: 'del',
@@ -94,12 +93,12 @@ describe('Routers', () => {
 
   describe('Routers.clear', () => {
     it('should be a function', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       expect(routers.clear).to.be.a('function')
     })
 
     it('should clear all routers', async () => {
-      const routers = new Routers(databaseTestFile)
+      const routers = new Routers()
       await routers.clear()
       const { length } = await routers.get()
       expect(length).to.be.equal(0)

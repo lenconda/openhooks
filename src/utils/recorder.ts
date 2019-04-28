@@ -1,5 +1,9 @@
-import Database from './database'
 import uuidv1 from 'uuid/v1'
+
+import LogsEntity from '../database/entity/logs'
+import { getConnection } from '../database/connections'
+import { Repository } from 'typeorm'
+import Initializer from './initializer'
 
 export interface InsertRecord {
   routerId: string
@@ -7,27 +11,26 @@ export interface InsertRecord {
   succeeded: boolean
 }
 
-class Recorder extends Database {
-  constructor(databaseFilePath: string) {
-    super(databaseFilePath)
+class Recorder {
+  constructor() {
+    new Initializer().run()
   }
 
   async insert(data: InsertRecord): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
+      const connection = await getConnection()
+      const logsModel: Repository<any> = await connection.getRepository(LogsEntity)
       const generatedUuid = uuidv1()
         .split('-')
         .join('')
-      await this.dbRun(
-        `INSERT INTO oh_logs(uuid, router_id, trigger_time, result, succeeded) 
-        VALUES ($uuid, $routerId, $triggerTime, $result, $succeeded)`,
-        {
-          $uuid: generatedUuid,
-          $routerId: data.routerId,
-          $triggerTime: Date.parse(new Date().toString()),
-          $result: data.result,
-          $succeeded: data.succeeded
-        }
-      )
+      const logsEntity = new LogsEntity()
+      logsEntity.uuid = generatedUuid
+      logsEntity.routerId = data.routerId
+      logsEntity.triggerTime = Date.parse(new Date().toString()).toString()
+      logsEntity.result = data.result
+      logsEntity.succeeded = data.succeeded
+      await logsModel.save(<any>logsEntity)
+      await connection.close()
       resolve()
     })
   }

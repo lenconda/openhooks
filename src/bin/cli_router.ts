@@ -2,15 +2,11 @@
 
 import program from 'commander'
 import inquirer from 'inquirer'
-import Initializer from '../utils/initializer'
-import { openhooksDir, databaseFile } from '../utils/constants'
 import Routers from '../utils/routers'
 import JSONFile from '../utils/json_file'
-import Keys from '../utils/keys'
 import path from 'path'
 import moment from 'moment'
-
-new Initializer(openhooksDir, databaseFile).run()
+import Keys from '../utils/keys'
 
 program.version(
   new JSONFile(path.resolve(__dirname, '../../package.json')).read().version
@@ -40,20 +36,18 @@ program
     inquirer.prompt(questions).then(async (answers: any) => {
       const { desc, command, auth } = answers
       try {
-        const authBool = auth === 'true'
-        const id = await new Routers(databaseFile).add({
+        const routers = new Routers()
+        const keys = new Keys()
+        const authBool = auth.trim() === 'true'
+        const id = await routers.add({
           desc: desc || '',
           command: command || '',
           auth: authBool
         })
-        const { length } = await new Keys(databaseFile).get()
+        const { length } = await keys.get()
         if (authBool && length === 0)
-          console.log(
-            `There are no keys, generated a new key: ${await new Keys(
-              databaseFile
-            ).generate()}`
-          )
-        console.log(`Generated a webhook: ${id}`)
+          console.log(`There are no keys, generated a new key: ${await keys.generate()}`)
+        console.log(`Generated a webhook: /hooks/${id}`)
       } catch (e) {
         console.log(`Unable to generate a webhook: /hooks/${e.toString()}`)
       }
@@ -65,7 +59,7 @@ program
   .description('list all webhooks of the server')
   .action(async () => {
     try {
-      const results = await new Routers(databaseFile).get()
+      const results = await new Routers().get()
       const webhooks = results.map((value, index) => {
         const { path, command, auth, desc, createTime, updateTime } = value
         return {
@@ -91,7 +85,7 @@ program
   .description('delete a webhook with specified index')
   .action(async uuid => {
     try {
-      const deletedId = await new Routers(databaseFile).delete(uuid)
+      const deletedId = await new Routers().delete(uuid)
       console.log(`Deleted webhook: /hooks/${deletedId}`)
     } catch (e) {
       console.log(`Unable to delete webhook with uuid ${uuid}: ${e.toString()}`)
@@ -110,7 +104,7 @@ program
   .action(async (uuid, options) => {
     try {
       const { desc, newCommand, auth } = options
-      const updatedId = await new Routers(databaseFile).update(uuid, {
+      const updatedId = await new Routers().update(uuid, {
         updateCmd: newCommand,
         auth,
         desc
@@ -126,7 +120,7 @@ program
   .description('clear all webhooks')
   .action(async () => {
     try {
-      const routers = await new Routers(databaseFile).clear()
+      const routers = await new Routers().clear()
       if (routers.length === 0) console.log(`Cleared all webhooks`)
       else console.log(`Something wrong when clearing webhooks`)
     } catch (e) {

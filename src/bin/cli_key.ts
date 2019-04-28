@@ -1,14 +1,10 @@
 #!/usr/bin/env node
 
 import program from 'commander'
-import Initializer from '../utils/initializer'
-import { openhooksDir, databaseFile } from '../utils/constants'
 import JSONFile from '../utils/json_file'
 import Keys from '../utils/keys'
 import path from 'path'
 import moment from 'moment'
-
-new Initializer(openhooksDir, databaseFile).run()
 
 program.version(
   new JSONFile(path.resolve(__dirname, '../../package.json')).read().version
@@ -19,7 +15,7 @@ program
   .description('generate an access key')
   .action(async options => {
     try {
-      const keyId = await new Keys(databaseFile).generate()
+      const keyId = await new Keys().generate()
       console.log(`Generated a new key: ${keyId}`)
     } catch (e) {
       console.log(`Unable to generate key: ${e.toString()}`)
@@ -31,7 +27,7 @@ program
   .description('list all keys of the server')
   .action(async () => {
     try {
-      const rows = await new Keys(databaseFile).get()
+      const rows = await new Keys().get()
       const keys = rows.map((value, index1) => {
         return {
           key: value.key,
@@ -50,7 +46,7 @@ program
   .description('delete a key with specified index')
   .action(async value => {
     try {
-      const deletedKey = await new Keys(databaseFile).remove(value)
+      const deletedKey = await new Keys().remove(value)
       console.log(`Deleted a key: ${deletedKey}`)
     } catch (e) {
       console.log(`Unable to delete the key: ${e.toString()}`)
@@ -62,7 +58,7 @@ program
   .description('clear all keys')
   .action(async () => {
     try {
-      const keys = await new Keys(databaseFile).clear()
+      const keys = await new Keys().clear()
       if (keys.length === 0) console.log(`Cleard all keys`)
       else console.log(`Something wrong when clearing keys`)
     } catch (e) {

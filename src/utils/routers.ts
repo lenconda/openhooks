@@ -1,6 +1,18 @@
 import uuidv4 from 'uuid/v4'
-import Database from '../utils/database'
-import { databaseFile } from '../utils/constants'
+
+import RoutersEntity from '../database/entity/routers'
+import { getConnection } from '../database/connections'
+import { Repository } from 'typeorm'
+import Initializer from './initializer'
+
+export interface RoutersModel {
+  uuid: string
+  description: string
+  command: string
+  createTime: string
+  updateTime: string
+  auth: boolean
+}
 
 export interface WebhookRouterBase {
   desc: string
@@ -23,34 +35,30 @@ export interface WebhookUpdate {
   auth?: string
 }
 
-class Routers extends Database {
-  constructor(routersFilePath: string) {
-    super(routersFilePath)
+class Routers {
+  constructor() {
+    new Initializer().run()
   }
 
-  async find(id: string): Promise<WebhookRouterItem> {
+  async find(id: string): Promise<WebhookRouterItem | null> {
     return new Promise<WebhookRouterItem>(async (resolve, reject) => {
+      const connection = await getConnection()
       try {
-        const {
-          uuid,
-          description,
-          command,
-          create_time,
-          auth,
-          update_time
-        } = await this.dbGet(`SELECT * FROM oh_routers WHERE uuid = $id`, {
-          $id: id
-        })
+        const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
+        const findResult: RoutersModel = await routersModel.findOne(<any>{ uuid: id })
+        const { uuid, description, command, createTime, auth, updateTime } = findResult
         const result: WebhookRouterItem = {
           path: `/hooks/${uuid}`,
           desc: description,
-          auth: auth === 1 ? true : false,
+          auth,
           command,
-          createTime: parseInt(create_time) || null,
-          updateTime: parseInt(update_time) || null
+          createTime: parseInt(createTime) || null,
+          updateTime: parseInt(updateTime) || null
         }
+        await connection.close()
         resolve(result)
       } catch (e) {
+        await connection.close()
         resolve(null)
       }
     })
@@ -58,82 +66,80 @@ class Routers extends Database {
 
   async delete(id: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
-      await this.dbRun('DELETE FROM oh_routers WHERE uuid = $id', { $id: id })
+      const connection = await getConnection()
+      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
+      const result = await routersModel.findOne(<any>{ uuid: id })
+      await routersModel.remove(result)
+      await connection.close()
       resolve(id)
     })
   }
 
   async add(route: WebhookRouterBase): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
+      const connection = await getConnection()
+      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
       const generatedUuid = uuidv4()
-        .split('-')
-        .join('')
-      await this.dbRun(
-        'INSERT INTO oh_routers(uuid, description, command, create_time, update_time, auth) VALUES (?, ?, ?, ?, ?, ?)',
-        [
-          generatedUuid,
-          route.desc,
-          route.command,
-          Date.parse(new Date().toString()),
-          null,
-          route.auth
-        ]
-      )
+      .split('-')
+      .join('')
+      const newRouter = new RoutersEntity()
+      newRouter.uuid = generatedUuid
+      newRouter.description = route.desc
+      newRouter.command = route.command
+      newRouter.createTime = Date.parse(new Date().toString()).toString()
+      newRouter.updateTime = null
+      newRouter.auth = route.auth
+      await routersModel.save(<any>newRouter)
+      await connection.close()
       resolve(generatedUuid)
     })
   }
 
   async get(): Promise<WebhookRouterItem[]> {
     return new Promise<WebhookRouterItem[]>(async (resolve, reject) => {
-      const rows = await this.dbAll('SELECT * FROM oh_routers')
-      const result = rows.map(
-        (value, index): WebhookRouterItem => {
-          const {
-            uuid,
-            description,
-            command,
-            create_time,
-            update_time,
-            auth
-          } = value
-          return {
-            path: `/hooks/${uuid}`,
-            desc: description,
-            command,
-            createTime: parseInt(create_time) || null,
-            updateTime: parseInt(update_time) || null,
-            auth: auth === 1 ? true : false
-          }
+      const connection = await getConnection()
+      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
+      const rows: RoutersModel[] = await routersModel.find()
+      const result = rows.map((value, index): WebhookRouterItem => {
+        const { uuid, description, command, createTime, updateTime, auth } = value
+        return {
+          path: `/hooks/${uuid}`,
+          desc: description,
+          command,
+          createTime: parseInt(createTime) || null,
+          updateTime: parseInt(updateTime) || null,
+          auth
         }
-      )
+      })
+      await connection.close()
       resolve(result)
     })
   }
 
   async clear(): Promise<any[]> {
     return new Promise(async (resolve, reject) => {
-      await this.dbRun(`DELETE FROM oh_routers`)
+      const connection = await getConnection()
+      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
+      await routersModel.clear()
+      await connection.close()
       resolve([])
     })
   }
 
   async update(id: string, updates: WebhookUpdate): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
-      const result = await this.dbGet(
-        'SELECT * FROM oh_routers WHERE uuid = $id',
-        { $id: id }
-      )
+      const connection = await getConnection()
+      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
+      const result = await routersModel.findOne(<any>{ uuid: id })
       const { description, auth, command } = result
-      await this.dbRun(
-        `UPDATE oh_routers SET description = ?, auth = ?, command = ?, update_time = ? WHERE uuid = ?`,
-        [
-          updates.desc || description,
-          updates.auth === undefined ? auth : JSON.parse(updates.auth),
-          updates.updateCmd || command,
-          Date.parse(new Date().toString()),
-          id
-        ]
-      )
+      const updatePart = {
+        description: updates.desc || description,
+        auth: updates.auth === undefined ? auth : JSON.parse(updates.auth),
+        command: updates.updateCmd || command,
+        updateTime: Date.parse(new Date().toString()).toString()
+      }
+      await routersModel.update(<any>{ uuid: id }, <any>updatePart)
+      await connection.close()
       resolve(id)
     })
   }

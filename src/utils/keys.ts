@@ -1,56 +1,68 @@
 import uuidv1 from 'uuid/v1'
-import Database from '../utils/database'
+import KeysEntity from '../database/entity/keys'
+import { getConnection } from '../database/connections'
+import { Repository } from 'typeorm'
+import Initializer from './initializer'
+
 
 interface KeysResult {
   key: string
   createTime: number
 }
 
-class Keys extends Database {
-  constructor(keysFilePath: string) {
-    super(keysFilePath)
+class Keys {
+  constructor() {
+    new Initializer().run()
   }
 
   async get(): Promise<KeysResult[]> {
     return new Promise<KeysResult[]>(async (resolve, reject) => {
-      const results = await this.dbAll('SELECT * FROM oh_keys')
-      resolve(
-        results.map((value, index) => {
-          return {
-            key: value.value,
-            createTime: parseInt(value.create_time)
-          }
-        })
-      )
+      const connection = await getConnection()
+      const keysModel: Repository<any> = await connection.getRepository(KeysEntity)
+      const results = await keysModel.find()
+      await connection.close()
+      resolve(results.map((value, index) => {
+        return {
+          key: value.value,
+          createTime: parseInt(value.createTime)
+        }
+      }))
     })
   }
 
   async generate(): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
+      const connection = await getConnection()
+      const keysModel: Repository<any> = await connection.getRepository(KeysEntity)
       const generatedKey = uuidv1()
         .split('-')
         .join('')
-      await this.dbRun(
-        `INSERT INTO oh_keys(value, create_time) VALUES ($keyValue, $keyCreateTime)`,
-        {
-          $keyValue: generatedKey,
-          $keyCreateTime: Date.parse(new Date().toString())
-        }
-      )
+      const key = new KeysEntity()
+      key.value = generatedKey
+      key.createTime = Date.parse(new Date().toString()).toString()
+      await keysModel.save<any>(key)
+      await connection.close()
       resolve(generatedKey)
     })
   }
 
   async remove(value: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
-      await this.dbRun(`DELETE FROM oh_keys WHERE value = "${value}"`)
+      const connection = await getConnection()
+      const keysModel: Repository<any> = await connection.getRepository(KeysEntity)
+      const removedKey = await keysModel.findOne(<any>{ value: value })
+      await keysModel.remove(removedKey)
+      await connection.close()
       resolve(value)
     })
   }
 
-  async clear(): Promise<any[]> {
-    return new Promise<any[]>(async (resolve, reject) => {
-      await this.dbRun(`DELETE FROM oh_keys`)
+  async clear(): Promise<[]> {
+    return new Promise<[]>(async (resolve, reject) => {
+      const connection = await getConnection()
+      const keysModel: Repository<any> = await connection.getRepository(KeysEntity)
+      await keysModel.clear()
+      await connection.close()
       resolve([])
     })
   }

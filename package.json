@@ -1,13 +1,13 @@
 {
   "name": "openhooks",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "🔱 A simple server for web hooks.",
   "main": "lib/bin/cli.js",
   "scripts": {
     "build": "tsc",
     "init": "ts-node scripts/init.ts",
     "prepare": "npm run build",
-    "test": "nyc mocha -r ts-node/register test/**/**/*.spec.ts"
+    "test": "export NODE_ENV=test;nyc mocha -r ts-node/register test/**/**/*.spec.ts"
   },
   "repository": {
     "type": "git",
@@ -75,6 +75,7 @@
     "sqlite3": "^4.0.6",
     "ts-node": "^8.0.3",
     "typedi": "^0.7.2",
+    "typeorm": "^0.2.16",
     "typescript": "^3.4.3",
     "uuid": "^3.3.2"
   }
