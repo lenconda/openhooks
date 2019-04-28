@@ -2,12 +2,8 @@
 
 import program from 'commander'
 import Server from '../utils/server'
-import Initializer from '../utils/initializer'
-import { openhooksDir, databaseFile } from '../utils/constants'
 import JSONFile from '../utils/json_file'
 import path from 'path'
-
-new Initializer(openhooksDir, databaseFile).run()
 
 program
   .version(
