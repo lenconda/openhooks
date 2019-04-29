@@ -36,7 +36,7 @@ export default class DashboardService {
     if (result)
       return {
         uuid: result.uuid,
-        username: result.uuid,
+        username: result.username,
         updateTime: result.updateAt
       }
     else
@@ -46,19 +46,16 @@ export default class DashboardService {
   async updateUserProfile(userId: string, updates: UserInfoUpdate): Promise<string> {
     const { password, username } =
         await this.adminModel.findOne({ uuid: userId })
-    if (md5(password) === updates.password) {
-      try {
-        const adminEntity = new AdminEntity()
-        adminEntity.password = updates.newPassword || password
-        adminEntity.updateAt = Date.parse(new Date().toString()).toString()
-        adminEntity.username = updates.username || username
-        await this.adminModel.update({ uuid: userId }, adminEntity)
-        return `Updated profile for user ${username}(${userId})`
-      } catch (e) {
-        throw new Error(e)
-      }
-    } else
-      throw new BadRequestError('Old password does not match')
+    const adminEntity = new AdminEntity()
+    adminEntity.updateAt = Date.parse(new Date().toString()).toString()
+    adminEntity.username = updates.username || username
+    if (updates.password)
+      if (md5(updates.password) === password)
+        adminEntity.password = md5(updates.newPassword) || password
+      else
+        throw new BadRequestError('Old password does not match')
+    await this.adminModel.update({ uuid: userId }, adminEntity)
+    return `Updated profile for user ${username}(${userId})`
   }
 
   async getHitories(page: number) {

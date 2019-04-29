@@ -31,9 +31,9 @@ export default class DashboardController {
   }
 
   @Authorized()
-  @Put('/update')
+  @Put('/profile')
   async updateProfile(
-      @CurrentUser() userId: string, updates: UserInfoUpdate) {
+      @CurrentUser() userId: string, @BodyParam('updates') updates: UserInfoUpdate) {
     const result = await this.service.updateUserProfile(userId, updates)
     return result
   }
