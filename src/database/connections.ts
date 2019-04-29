@@ -1,10 +1,11 @@
-import { ConnectionOptions, createConnection } from 'typeorm'
-import { databaseFile, databaseTestFile } from '../utils/constants'
+import { Connection, ConnectionOptions, createConnection } from 'typeorm'
+import { databaseFile, databaseTestFile } from '../util/constants'
 
 import Routers from './entity/routers'
 import Logs from './entity/logs'
 import Keys from './entity/keys'
 import Admin from './entity/admin'
+import Initializer from '../util/initializer'
 
 const options: ConnectionOptions = {
   type: 'sqlite',
@@ -14,4 +15,8 @@ const options: ConnectionOptions = {
   logging: false
 }
 
-export const getConnection = async () => await createConnection(options)
+export const getConnection = async (): Promise<Connection> => {
+  new Initializer().run()
+  const connection = await createConnection(options)
+  return connection
+}

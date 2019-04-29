@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import Routers, { WebhookRouterBase } from '../src/utils/routers'
-import Initializer from '../src/utils/initializer'
+import Routers, { WebhookRouterBase } from '../src/util/routers'
+import Initializer from '../src/util/initializer'
 
 describe('Routers', () => {
   before(() => {

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import program from 'commander'
-import JSONFile from '../utils/json_file'
-import Keys from '../utils/keys'
+import JSONFile from '../util/json_file'
+import Keys from '../util/keys'
 import path from 'path'
 import moment from 'moment'
 

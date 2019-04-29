@@ -2,8 +2,6 @@ import uuidv1 from 'uuid/v1'
 import KeysEntity from '../database/entity/keys'
 import { getConnection } from '../database/connections'
 import { Repository } from 'typeorm'
-import Initializer from './initializer'
-
 
 interface KeysResult {
   key: string
@@ -11,10 +9,6 @@ interface KeysResult {
 }
 
 class Keys {
-  constructor() {
-    new Initializer().run()
-  }
-
   async get(): Promise<KeysResult[]> {
     return new Promise<KeysResult[]>(async (resolve, reject) => {
       const connection = await getConnection()

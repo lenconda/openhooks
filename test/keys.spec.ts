@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import Keys from '../src/utils/keys'
-import Initializer from '../src/utils/initializer'
+import Keys from '../src/util/keys'
+import Initializer from '../src/util/initializer'
 
 describe('Keys', () => {
   before(() => {

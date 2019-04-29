@@ -1,9 +1,7 @@
 import uuidv4 from 'uuid/v4'
-
 import RoutersEntity from '../database/entity/routers'
 import { getConnection } from '../database/connections'
 import { Repository } from 'typeorm'
-import Initializer from './initializer'
 
 export interface RoutersModel {
   uuid: string
@@ -36,10 +34,6 @@ export interface WebhookUpdate {
 }
 
 class Routers {
-  constructor() {
-    new Initializer().run()
-  }
-
   async find(id: string): Promise<WebhookRouterItem | null> {
     return new Promise<WebhookRouterItem>(async (resolve, reject) => {
       const connection = await getConnection()

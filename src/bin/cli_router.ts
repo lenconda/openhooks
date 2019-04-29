@@ -2,11 +2,11 @@
 
 import program from 'commander'
 import inquirer from 'inquirer'
-import Routers from '../utils/routers'
-import JSONFile from '../utils/json_file'
+import Routers from '../util/routers'
+import JSONFile from '../util/json_file'
 import path from 'path'
 import moment from 'moment'
-import Keys from '../utils/keys'
+import Keys from '../util/keys'
 
 program.version(
   new JSONFile(path.resolve(__dirname, '../../package.json')).read().version

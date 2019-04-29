@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import program from 'commander'
-import Server from '../utils/server'
-import JSONFile from '../utils/json_file'
+import Server from '../util/server'
+import JSONFile from '../util/json_file'
 import path from 'path'
 
 program

@@ -3,7 +3,6 @@ import uuidv1 from 'uuid/v1'
 import LogsEntity from '../database/entity/logs'
 import { getConnection } from '../database/connections'
 import { Repository } from 'typeorm'
-import Initializer from './initializer'
 
 export interface InsertRecord {
   routerId: string
@@ -12,10 +11,6 @@ export interface InsertRecord {
 }
 
 class Recorder {
-  constructor() {
-    new Initializer().run()
-  }
-
   async insert(data: InsertRecord): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
       const connection = await getConnection()
