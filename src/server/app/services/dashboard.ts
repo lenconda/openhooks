@@ -5,6 +5,7 @@ import {
   InternalServerError,
   NotFoundError } from 'routing-controllers'
 import md5 from 'md5'
+import uuidv4 from 'uuid/v4'
 import { getManager, Repository } from 'typeorm'
 import AdminEntity from '../../../database/entity/admin'
 import LogsEntity from '../../../database/entity/logs'
@@ -115,6 +116,31 @@ export default class DashboardService {
     }
   }
 
+  async addHook(info: HookInfoCreate): Promise<string> {
+    try {
+      const routersEntity = new RoutersEntity()
+      const generatedUuid = uuidv4().split('-').join('')
+      routersEntity.uuid = generatedUuid
+      routersEntity.description = info.description
+      routersEntity.auth = info.auth
+      routersEntity.command = info.command
+      routersEntity.createTime = Date.parse(new Date().toString()).toString()
+      await this.routersModel.save(routersEntity)
+      return `Added a new hook ${generatedUuid}`
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async clearHooks(): Promise<string> {
+    try {
+      await this.routersModel.clear()
+      return `Cleared all hooks`
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
   async updateHook(id: string, updates: HookInfoUpdate): Promise<string> {
     try {
       const routersEntity = new RoutersEntity()
@@ -181,4 +207,10 @@ export interface HookInfoUpdate {
   description?: string
   command?: string
   auth?: boolean
+}
+
+export interface HookInfoCreate {
+  description: string
+  command: string
+  auth: boolean
 }

@@ -6,10 +6,12 @@ import {
   BodyParam,
   CurrentUser,
   Put,
+  Body,
   Delete,
   QueryParam,
   Param } from 'routing-controllers'
 import DashboardService, {
+  HookInfoCreate,
   HookInfoUpdate,
   UserInfoUpdate } from '../services/dashboard'
 import { Inject } from 'typedi'
@@ -60,6 +62,20 @@ export default class DashboardController {
   @Get('/hooks')
   async getHooks(@QueryParam('page') page: number = 1) {
     const result = await this.service.getHooks(page)
+    return result
+  }
+
+  @Authorized()
+  @Post('/hooks')
+  async addHook(@Body() body: HookInfoCreate) {
+    const result = await this.service.addHook(body)
+    return result
+  }
+
+  @Authorized()
+  @Delete('/hooks')
+  async clearHooks() {
+    const result = await this.service.clearHooks()
     return result
   }
 
