@@ -85,4 +85,18 @@ export default class DashboardController {
     const result = await this.service.deleteHook(id)
     return result
   }
+
+  @Authorized()
+  @Get('/keys')
+  async getKeys(@QueryParam('page') page: number = 1) {
+    const result = await this.service.getKeys(page)
+    return result
+  }
+
+  @Authorized()
+  @Delete('/key/:value')
+  async deleteKey(@Param('value') value: string) {
+    const result = await this.service.deleteKey(value)
+    return result
+  }
 }

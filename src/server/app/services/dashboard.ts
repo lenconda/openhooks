@@ -9,6 +9,7 @@ import { getManager, Repository } from 'typeorm'
 import AdminEntity from '../../../database/entity/admin'
 import LogsEntity from '../../../database/entity/logs'
 import RoutersEntity from '../../../database/entity/routers'
+import KeysEntity from '../../../database/entity/keys'
 import jwt from 'jsonwebtoken'
 import { fetchWithPagination, hasNext } from '../../util/pagination'
 
@@ -18,11 +19,13 @@ export default class DashboardService {
     this.adminModel = getManager().getRepository(AdminEntity)
     this.logsModel = getManager().getRepository(LogsEntity)
     this.routersModel = getManager().getRepository(RoutersEntity)
+    this.keysModel = getManager().getRepository(KeysEntity)
   }
 
   private adminModel: Repository<AdminEntity>
   private logsModel: Repository<LogsEntity>
   private routersModel: Repository<RoutersEntity>
+  private keysModel: Repository<KeysEntity>
 
   async login(username: string, password: string): Promise<string> {
     try {
@@ -133,6 +136,25 @@ export default class DashboardService {
     try {
       await this.routersModel.delete({ uuid: id })
       return `Deleted hook: ${id}`
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async getKeys(page: number): Promise<Response<KeysEntity>> {
+    try {
+      const result = await fetchWithPagination(page, this.keysModel)
+      const next = await hasNext<KeysEntity>(page, this.keysModel)
+      return { items: result, next }
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async deleteKey(value: string): Promise<string> {
+    try {
+      await this.keysModel.delete({ value })
+      return `Deleted key: ${value}`
     } catch (e) {
       throw new InternalServerError(e)
     }
