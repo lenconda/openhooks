@@ -2,11 +2,13 @@ import { Service } from 'typedi'
 import {
   BadRequestError,
   ForbiddenError,
+  InternalServerError,
   NotFoundError } from 'routing-controllers'
 import md5 from 'md5'
 import { getManager, Repository } from 'typeorm'
 import AdminEntity from '../../../database/entity/admin'
 import LogsEntity from '../../../database/entity/logs'
+import RoutersEntity from '../../../database/entity/routers'
 import jwt from 'jsonwebtoken'
 import { fetchWithPagination, hasNext } from '../../util/pagination'
 
@@ -15,58 +17,125 @@ export default class DashboardService {
   constructor() {
     this.adminModel = getManager().getRepository(AdminEntity)
     this.logsModel = getManager().getRepository(LogsEntity)
+    this.routersModel = getManager().getRepository(RoutersEntity)
   }
 
   private adminModel: Repository<AdminEntity>
   private logsModel: Repository<LogsEntity>
+  private routersModel: Repository<RoutersEntity>
 
   async login(username: string, password: string): Promise<string> {
-    const result =
-        await this.adminModel.findOne({ username, password: md5(password) })
-    if (result) {
-      const payload = { id: result.uuid.toString() }
-      return jwt.sign(
-          payload, 'openhooks', { expiresIn: '1day' })
-    } else
-      throw new ForbiddenError('Login failed')
+    try {
+      const result =
+          await this.adminModel.findOne({ username, password: md5(password) })
+      if (result) {
+        const payload = { id: result.uuid.toString() }
+        return jwt.sign(
+            payload, 'openhooks', { expiresIn: '1day' })
+      } else
+        throw new ForbiddenError('Login failed')
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
   }
 
   async getUserProfile(userId: string): Promise<UserInfo> {
-    const result = await this.adminModel.findOne({ uuid: userId })
-    if (result)
-      return {
-        uuid: result.uuid,
-        username: result.username,
-        updateTime: result.updateAt
-      }
-    else
-      throw new NotFoundError(`User with UUID: ${userId} not found`)
+    try {
+      const result = await this.adminModel.findOne({ uuid: userId })
+      if (result)
+        return {
+          uuid: result.uuid,
+          username: result.username,
+          updateTime: result.updateAt
+        }
+      else
+        throw new NotFoundError(`User with UUID: ${userId} not found`)
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
   }
 
   async updateUserProfile(userId: string, updates: UserInfoUpdate): Promise<string> {
-    const { password, username } =
-        await this.adminModel.findOne({ uuid: userId })
-    const adminEntity = new AdminEntity()
-    adminEntity.updateAt = Date.parse(new Date().toString()).toString()
-    adminEntity.username = updates.username || username
-    if (updates.password)
-      if (md5(updates.password) === password)
-        adminEntity.password = md5(updates.newPassword) || password
-      else
-        throw new BadRequestError('Old password does not match')
-    await this.adminModel.update({ uuid: userId }, adminEntity)
-    return `Updated profile for user ${username}(${userId})`
+    try {
+      const { password, username } =
+          await this.adminModel.findOne({ uuid: userId })
+      const adminEntity = new AdminEntity()
+      adminEntity.updateAt = Date.parse(new Date().toString()).toString()
+      adminEntity.username = updates.username || username
+      if (updates.password)
+        if (md5(updates.password) === password)
+          adminEntity.password = md5(updates.newPassword) || password
+        else
+          throw new BadRequestError('Old password does not match')
+      await this.adminModel.update({ uuid: userId }, adminEntity)
+      return `Updated profile for user ${username}(${userId})`
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
   }
 
-  async getHitories(page: number) {
-    const result = await fetchWithPagination(page, this.logsModel)
-    const next = await hasNext<LogsEntity>(page, this.logsModel)
-    return { items: result, next }
+  async getHitories(page: number): Promise<Response<LogsEntity>> {
+    try {
+      const result = await fetchWithPagination(page, this.logsModel)
+      const next = await hasNext<LogsEntity>(page, this.logsModel)
+      return { items: result, next }
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
   }
 
   async getHistoryById(id: string): Promise<LogsEntity> {
-    const result = await this.logsModel.findOne({ uuid: id })
-    return result
+    try {
+      const result = await this.logsModel.findOne({ uuid: id })
+      return result
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async getHooks(page: number): Promise<Response<RoutersEntity>> {
+    try {
+      const result = await fetchWithPagination(page, this.routersModel)
+      const next = await hasNext<RoutersEntity>(page, this.routersModel)
+      return { items: result, next }
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async getHookById(id: string): Promise<RoutersEntity> {
+    try {
+      const result = await this.routersModel.findOne({ uuid: id })
+      return result
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async updateHook(id: string, updates: HookInfoUpdate): Promise<string> {
+    try {
+      const routersEntity = new RoutersEntity()
+      if (updates.description)
+        routersEntity.description = updates.description
+      if (updates.command)
+        routersEntity.command = updates.command
+      if (updates.auth)
+        routersEntity.auth = updates.auth
+      routersEntity.updateTime = Date.parse(new Date().toString()).toString()
+      await this.routersModel.update({ uuid: id }, routersEntity)
+      return `Updated hook: ${id}`
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async deleteHook(id: string): Promise<string> {
+    try {
+      await this.routersModel.delete({ uuid: id })
+      return `Deleted hook: ${id}`
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
   }
 }
 
@@ -79,4 +148,15 @@ export interface UserInfo {
 export interface UserInfoUpdate extends UserInfo {
   password?: string
   newPassword?: string
+}
+
+export interface Response<T> {
+  items: T[],
+  next: boolean
+}
+
+export interface HookInfoUpdate {
+  description?: string
+  command?: string
+  auth?: boolean
 }

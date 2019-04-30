@@ -6,9 +6,12 @@ import {
   BodyParam,
   CurrentUser,
   Put,
+  Delete,
   QueryParam,
   Param } from 'routing-controllers'
-import DashboardService, { UserInfoUpdate } from '../services/dashboard'
+import DashboardService, {
+  HookInfoUpdate,
+  UserInfoUpdate } from '../services/dashboard'
 import { Inject } from 'typedi'
 
 @JsonController('/api')
@@ -50,6 +53,36 @@ export default class DashboardController {
   @Get('/history/:id')
   async getHistoryById(@Param('id') id: string) {
     const result = await this.service.getHistoryById(id)
+    return result
+  }
+
+  @Authorized()
+  @Get('/hooks')
+  async getHooks(@QueryParam('page') page: number = 1) {
+    const result = await this.service.getHooks(page)
+    return result
+  }
+
+  @Authorized()
+  @Get('/hook/:id')
+  async getHookById(@Param('id') id: string) {
+    const result = await this.service.getHookById(id)
+    return result
+  }
+
+  @Authorized()
+  @Put('/hook/:id')
+  async updateHook(
+      @Param('id') id: string,
+      @BodyParam('updates') updates: HookInfoUpdate) {
+    const result = await this.service.updateHook(id, updates)
+    return result
+  }
+
+  @Authorized()
+  @Delete('/hook/:id')
+  async deleteHook(@Param('id') id: string) {
+    const result = await this.service.deleteHook(id)
     return result
   }
 }
