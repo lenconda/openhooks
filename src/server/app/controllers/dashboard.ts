@@ -110,6 +110,20 @@ export default class DashboardController {
   }
 
   @Authorized()
+  @Post('/keys')
+  async addKeys() {
+    const result = await this.service.addKey()
+    return result
+  }
+
+  @Authorized()
+  @Delete('/keys')
+  async deleteKeys() {
+    const result = await this.service.clearKeys()
+    return result
+  }
+
+  @Authorized()
   @Delete('/key/:value')
   async deleteKey(@Param('value') value: string) {
     const result = await this.service.deleteKey(value)

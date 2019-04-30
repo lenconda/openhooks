@@ -6,6 +6,7 @@ import {
   NotFoundError } from 'routing-controllers'
 import md5 from 'md5'
 import uuidv4 from 'uuid/v4'
+import uuidv1 from 'uuid/v1'
 import { getManager, Repository } from 'typeorm'
 import AdminEntity from '../../../database/entity/admin'
 import LogsEntity from '../../../database/entity/logs'
@@ -162,6 +163,28 @@ export default class DashboardService {
     try {
       await this.routersModel.delete({ uuid: id })
       return `Deleted hook: ${id}`
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async addKey(): Promise<string> {
+    try {
+      const generatedKey = uuidv1().split('-').join('')
+      const keysEntity = new KeysEntity()
+      keysEntity.value = generatedKey
+      keysEntity.createTime = Date.parse(new Date().toString()).toString()
+      await this.keysModel.save(keysEntity)
+      return `Add a new key: ${generatedKey}`
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
+  async clearKeys(): Promise<string> {
+    try {
+      await this.keysModel.clear()
+      return `Cleared all keys`
     } catch (e) {
       throw new InternalServerError(e)
     }
