@@ -13,7 +13,7 @@ import LogsEntity from '../../../database/entity/logs'
 import RoutersEntity from '../../../database/entity/routers'
 import KeysEntity from '../../../database/entity/keys'
 import jwt from 'jsonwebtoken'
-import { fetchWithPagination, hasNext } from '../../util/pagination'
+import { fetchWithPagination, hasNext, getPages } from '../../util/pagination'
 
 @Service()
 export default class DashboardService {
@@ -83,7 +83,8 @@ export default class DashboardService {
     try {
       const result = await fetchWithPagination(page, this.logsModel)
       const next = await hasNext<LogsEntity>(page, this.logsModel)
-      return { items: result, next }
+      const pages = await getPages<RoutersEntity>(this.routersModel)
+      return { items: result, next, pages }
     } catch (e) {
       throw new InternalServerError(e)
     }
@@ -102,7 +103,8 @@ export default class DashboardService {
     try {
       const result = await fetchWithPagination(page, this.routersModel)
       const next = await hasNext<RoutersEntity>(page, this.routersModel)
-      return { items: result, next }
+      const pages = await getPages<RoutersEntity>(this.routersModel)
+      return { items: result, next, pages }
     } catch (e) {
       throw new InternalServerError(e)
     }
@@ -194,7 +196,8 @@ export default class DashboardService {
     try {
       const result = await fetchWithPagination(page, this.keysModel)
       const next = await hasNext<KeysEntity>(page, this.keysModel)
-      return { items: result, next }
+      const pages = await getPages<RoutersEntity>(this.routersModel)
+      return { items: result, next, pages }
     } catch (e) {
       throw new InternalServerError(e)
     }
@@ -224,6 +227,7 @@ export interface UserInfoUpdate extends UserInfo {
 export interface Response<T> {
   items: T[],
   next: boolean
+  pages: number
 }
 
 export interface HookInfoUpdate {
