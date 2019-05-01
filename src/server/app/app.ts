@@ -3,6 +3,8 @@ import kcors from 'kcors'
 import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'
 import logger from 'koa-logger'
+import serve from 'koa-static'
+import path from 'path'
 import { getConnection } from '../../database/connections'
 import { useKoaServer, useContainer, Action } from 'routing-controllers'
 import { validateToken, getUserIDByToken } from '../util/authorization'
@@ -31,7 +33,7 @@ getConnection().then(async connection => {
   )
 
   app.use(kcors())
-
+  app.use(serve(path.resolve(__dirname, '../../../dashboard')))
   app.use(bodyParser())
 
   if (config.isDev) app.use(logger())
