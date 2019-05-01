@@ -29,14 +29,15 @@ export default class DashboardService {
   private routersModel: Repository<RoutersEntity>
   private keysModel: Repository<KeysEntity>
 
-  async login(username: string, password: string): Promise<string> {
+  async login(username: string, password: string): Promise<LoginInfo> {
     try {
       const result =
           await this.adminModel.findOne({ username, password: md5(password) })
       if (result) {
         const payload = { id: result.uuid.toString() }
-        return jwt.sign(
+        const token =  jwt.sign(
             payload, 'openhooks', { expiresIn: '1day' })
+        return { token }
       } else
         throw new ForbiddenError('Login failed')
     } catch (e) {
@@ -83,7 +84,7 @@ export default class DashboardService {
     try {
       const result = await fetchWithPagination(page, this.logsModel)
       const next = await hasNext<LogsEntity>(page, this.logsModel)
-      const pages = await getPages<RoutersEntity>(this.routersModel)
+      const pages = await getPages<LogsEntity>(this.logsModel)
       return { items: result, next, pages }
     } catch (e) {
       throw new InternalServerError(e)
@@ -151,7 +152,7 @@ export default class DashboardService {
         routersEntity.description = updates.description
       if (updates.command)
         routersEntity.command = updates.command
-      if (updates.auth)
+      if (updates.auth !== undefined)
         routersEntity.auth = updates.auth
       routersEntity.updateTime = Date.parse(new Date().toString()).toString()
       await this.routersModel.update({ uuid: id }, routersEntity)
@@ -196,7 +197,7 @@ export default class DashboardService {
     try {
       const result = await fetchWithPagination(page, this.keysModel)
       const next = await hasNext<KeysEntity>(page, this.keysModel)
-      const pages = await getPages<RoutersEntity>(this.routersModel)
+      const pages = await getPages<KeysEntity>(this.keysModel)
       return { items: result, next, pages }
     } catch (e) {
       throw new InternalServerError(e)
@@ -211,6 +212,10 @@ export default class DashboardService {
       throw new InternalServerError(e)
     }
   }
+}
+
+export interface LoginInfo {
+  token: string
 }
 
 export interface UserInfo {
