@@ -14,7 +14,7 @@ class Recorder {
   async insert(data: InsertRecord): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
       const connection = await getConnection()
-      const logsModel: Repository<any> = await connection.getRepository(LogsEntity)
+      const logsModel: Repository<LogsEntity> = await connection.getRepository(LogsEntity)
       const generatedUuid = uuidv1()
         .split('-')
         .join('')
@@ -24,7 +24,7 @@ class Recorder {
       logsEntity.triggerTime = Date.parse(new Date().toString()).toString()
       logsEntity.result = data.result
       logsEntity.succeeded = data.succeeded
-      await logsModel.save(<any>logsEntity)
+      await logsModel.save(logsEntity)
       await connection.close()
       resolve()
     })

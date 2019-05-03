@@ -12,7 +12,7 @@ class Keys {
   async get(): Promise<KeysResult[]> {
     return new Promise<KeysResult[]>(async (resolve, reject) => {
       const connection = await getConnection()
-      const keysModel: Repository<any> = await connection.getRepository(KeysEntity)
+      const keysModel: Repository<KeysEntity> = await connection.getRepository(KeysEntity)
       const results = await keysModel.find()
       await connection.close()
       resolve(results.map((value, index) => {
@@ -27,14 +27,14 @@ class Keys {
   async generate(): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const connection = await getConnection()
-      const keysModel: Repository<any> = await connection.getRepository(KeysEntity)
+      const keysModel: Repository<KeysEntity> = await connection.getRepository(KeysEntity)
       const generatedKey = uuidv1()
         .split('-')
         .join('')
       const key = new KeysEntity()
       key.value = generatedKey
       key.createTime = Date.parse(new Date().toString()).toString()
-      await keysModel.save<any>(key)
+      await keysModel.save(key)
       await connection.close()
       resolve(generatedKey)
     })
@@ -43,8 +43,8 @@ class Keys {
   async remove(value: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const connection = await getConnection()
-      const keysModel: Repository<any> = await connection.getRepository(KeysEntity)
-      const removedKey = await keysModel.findOne(<any>{ value: value })
+      const keysModel: Repository<KeysEntity> = await connection.getRepository(KeysEntity)
+      const removedKey = await keysModel.findOne({ value: value })
       await keysModel.remove(removedKey)
       await connection.close()
       resolve(value)
@@ -54,7 +54,7 @@ class Keys {
   async clear(): Promise<[]> {
     return new Promise<[]>(async (resolve, reject) => {
       const connection = await getConnection()
-      const keysModel: Repository<any> = await connection.getRepository(KeysEntity)
+      const keysModel: Repository<KeysEntity> = await connection.getRepository(KeysEntity)
       await keysModel.clear()
       await connection.close()
       resolve([])

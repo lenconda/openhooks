@@ -38,8 +38,8 @@ class Routers {
     return new Promise<WebhookRouterItem>(async (resolve, reject) => {
       const connection = await getConnection()
       try {
-        const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
-        const findResult: RoutersModel = await routersModel.findOne(<any>{ uuid: id })
+        const routersModel: Repository<RoutersEntity> = await connection.getRepository(RoutersEntity)
+        const findResult = await routersModel.findOne({ uuid: id })
         const { uuid, description, command, createTime, auth, updateTime } = findResult
         const result: WebhookRouterItem = {
           path: `/hooks/${uuid}`,
@@ -61,8 +61,8 @@ class Routers {
   async delete(id: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const connection = await getConnection()
-      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
-      const result = await routersModel.findOne(<any>{ uuid: id })
+      const routersModel: Repository<RoutersEntity> = await connection.getRepository(RoutersEntity)
+      const result = await routersModel.findOne({ uuid: id })
       await routersModel.remove(result)
       await connection.close()
       resolve(id)
@@ -72,7 +72,7 @@ class Routers {
   async add(route: WebhookRouterBase): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const connection = await getConnection()
-      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
+      const routersModel: Repository<RoutersEntity> = await connection.getRepository(RoutersEntity)
       const generatedUuid = uuidv4()
       .split('-')
       .join('')
@@ -83,7 +83,7 @@ class Routers {
       newRouter.createTime = Date.parse(new Date().toString()).toString()
       newRouter.updateTime = null
       newRouter.auth = route.auth
-      await routersModel.save(<any>newRouter)
+      await routersModel.save(newRouter)
       await connection.close()
       resolve(generatedUuid)
     })
@@ -92,8 +92,8 @@ class Routers {
   async get(): Promise<WebhookRouterItem[]> {
     return new Promise<WebhookRouterItem[]>(async (resolve, reject) => {
       const connection = await getConnection()
-      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
-      const rows: RoutersModel[] = await routersModel.find()
+      const routersModel: Repository<RoutersEntity> = await connection.getRepository(RoutersEntity)
+      const rows = await routersModel.find()
       const result = rows.map((value, index): WebhookRouterItem => {
         const { uuid, description, command, createTime, updateTime, auth } = value
         return {
@@ -113,7 +113,7 @@ class Routers {
   async clear(): Promise<any[]> {
     return new Promise(async (resolve, reject) => {
       const connection = await getConnection()
-      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
+      const routersModel: Repository<RoutersEntity> = await connection.getRepository(RoutersEntity)
       await routersModel.clear()
       await connection.close()
       resolve([])
@@ -123,8 +123,8 @@ class Routers {
   async update(id: string, updates: WebhookUpdate): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const connection = await getConnection()
-      const routersModel: Repository<any> = await connection.getRepository(RoutersEntity)
-      const result = await routersModel.findOne(<any>{ uuid: id })
+      const routersModel: Repository<RoutersEntity> = await connection.getRepository(RoutersEntity)
+      const result = await routersModel.findOne({ uuid: id })
       const { description, auth, command } = result
       const updatePart = {
         description: updates.desc || description,
@@ -132,7 +132,7 @@ class Routers {
         command: updates.updateCmd || command,
         updateTime: Date.parse(new Date().toString()).toString()
       }
-      await routersModel.update(<any>{ uuid: id }, <any>updatePart)
+      await routersModel.update({ uuid: id }, updatePart)
       await connection.close()
       resolve(id)
     })
