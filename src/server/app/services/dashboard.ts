@@ -130,7 +130,7 @@ export default class DashboardService {
       routersEntity.command = info.command
       routersEntity.createTime = Date.parse(new Date().toString()).toString()
       await this.routersModel.save(routersEntity)
-      return `Added a new hook ${generatedUuid}`
+      return `Generated a new hook ${generatedUuid}`
     } catch (e) {
       throw new InternalServerError(e)
     }
@@ -178,7 +178,7 @@ export default class DashboardService {
       keysEntity.value = generatedKey
       keysEntity.createTime = Date.parse(new Date().toString()).toString()
       await this.keysModel.save(keysEntity)
-      return `Add a new key: ${generatedKey}`
+      return `Generated a new key: ${generatedKey}`
     } catch (e) {
       throw new InternalServerError(e)
     }
