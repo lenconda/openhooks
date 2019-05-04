@@ -1,0 +1,14 @@
+.menu-active {
+  color: #337ab7!important;
+}
+
+.nav-link {
+  background: none!important;
+  border: 1px solid transparent!important;
+}
+
+.nav-link.active {
+  background-color: transparent!important;
+  background-image: linear-gradient(#101112, #17191b 40%, #1b1e20)!important;
+  background-repeat: no-repeat!important;
+}

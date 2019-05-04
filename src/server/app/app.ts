@@ -33,7 +33,7 @@ getConnection().then(async connection => {
   )
 
   app.use(kcors())
-  app.use(serve(path.resolve(__dirname, '../../../dashboard')))
+  app.use(serve(path.resolve(__dirname, '../../../dashboard/build')))
   app.use(bodyParser())
 
   if (config.isDev) app.use(logger())

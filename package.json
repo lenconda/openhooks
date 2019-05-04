@@ -4,9 +4,11 @@
   "description": "🔱 A server for handling webhook requests.",
   "main": "lib/bin/cli.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.cli.json",
+    "start-dashboard": "cd dashboard; react-scripts start;",
+    "build-dashboard": "cd dashboard; react-scripts build;",
     "init": "ts-node scripts/init.ts",
-    "prepare": "npm run build",
+    "prepare": "npm run build; npm run build-dashboard;",
     "test": "export NODE_ENV=test;nyc mocha -r ts-node/register test/**/**/*.spec.ts"
   },
   "repository": {
@@ -31,11 +33,13 @@
   },
   "homepage": "https://github.com/lenconda/openhooks#readme",
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/chai": "^4.1.7",
     "@types/chai-http": "^3.0.4",
     "@types/commander": "^2.12.2",
     "@types/fs-extra": "^5.0.5",
     "@types/inquirer": "^6.0.0",
+    "@types/jest": "24.0.12",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/kcors": "^2.2.2",
     "@types/koa": "^2.0.43",
@@ -45,18 +49,30 @@
     "@types/md5": "^2.1.33",
     "@types/mocha": "^5.2.6",
     "@types/moment": "^2.13.0",
-    "@types/node": "^11.13.4",
+    "@types/node": "12.0.0",
     "@types/path-exists": "^3.0.0",
+    "@types/react": "16.8.16",
+    "@types/react-dom": "16.8.4",
+    "@types/react-router": "^4.4.5",
+    "@types/react-router-dom": "^4.3.2",
     "@types/sqlite3": "^3.1.5",
     "@types/uuid": "^3.4.4",
+    "axios": "^0.18.0",
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
     "chai-spies": "0.7.1",
     "mocha": "^6.1.2",
+    "moment": "^2.24.0",
     "nyc": "^13.3.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^5.0.0",
+    "react-scripts": "^3.0.0",
     "supertest": "^4.0.2",
     "ts-node": "^8.0.3",
-    "typescript": "^3.4.3"
+    "typescript": "^3.4.3",
+    "watchable-stores": "^2.0.2"
   },
   "dependencies": {
     "@types/koa-static": "^4.0.1",
@@ -84,5 +100,25 @@
     "typeorm": "^0.2.16",
     "typescript": "^3.4.3",
     "uuid": "^3.3.2"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
   }
 }

@@ -32,3 +32,4 @@ play
 package-lock.json
 .nyc_*
 lib
+dashboard/build
