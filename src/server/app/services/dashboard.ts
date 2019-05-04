@@ -1,9 +1,9 @@
 import { Service } from 'typedi'
 import {
-  BadRequestError,
   ForbiddenError,
   InternalServerError,
-  NotFoundError } from 'routing-controllers'
+  UnauthorizedError
+} from 'routing-controllers'
 import md5 from 'md5'
 import uuidv4 from 'uuid/v4'
 import uuidv1 from 'uuid/v1'
@@ -30,54 +30,42 @@ export default class DashboardService {
   private keysModel: Repository<KeysEntity>
 
   async login(username: string, password: string): Promise<LoginInfo> {
-    try {
-      const result =
-          await this.adminModel.findOne({ username, password: md5(password) })
-      if (result) {
-        const payload = { id: result.uuid.toString() }
-        const token =  jwt.sign(
-            payload, 'openhooks', { expiresIn: '1day' })
-        return { token }
-      } else
-        throw new ForbiddenError('Login failed')
-    } catch (e) {
-      throw new InternalServerError(e)
-    }
+    const result =
+        await this.adminModel.findOne({ username, password: md5(password) })
+    if (result) {
+      const payload = { id: result.uuid.toString() }
+      const token =  jwt.sign(
+          payload, 'openhooks', { expiresIn: '1day' })
+      return { token }
+    } else
+      throw new ForbiddenError('Login failed')
   }
 
   async getUserProfile(userId: string): Promise<UserInfo> {
-    try {
-      const result = await this.adminModel.findOne({ uuid: userId })
-      if (result)
-        return {
-          uuid: result.uuid,
-          username: result.username,
-          updateTime: result.updateAt
-        }
-      else
-        throw new NotFoundError(`User with UUID: ${userId} not found`)
-    } catch (e) {
-      throw new InternalServerError(e)
-    }
+    const result = await this.adminModel.findOne({ uuid: userId })
+    if (result)
+      return {
+        uuid: result.uuid,
+        username: result.username,
+        updateTime: result.updateAt
+      }
+    else
+      throw new UnauthorizedError(`User with UUID: ${userId} not found`)
   }
 
   async updateUserProfile(userId: string, updates: UserInfoUpdate): Promise<string> {
-    try {
-      const { password, username } =
-          await this.adminModel.findOne({ uuid: userId })
-      const adminEntity = new AdminEntity()
-      adminEntity.updateAt = Date.parse(new Date().toString()).toString()
-      adminEntity.username = updates.username || username
-      if (updates.password)
-        if (md5(updates.password) === password)
-          adminEntity.password = md5(updates.newPassword) || password
-        else
-          throw new BadRequestError('Old password does not match')
-      await this.adminModel.update({ uuid: userId }, adminEntity)
-      return `Updated profile for user ${username}(${userId})`
-    } catch (e) {
-      throw new InternalServerError(e)
-    }
+    const { password, username } =
+        await this.adminModel.findOne({ uuid: userId })
+    const adminEntity = new AdminEntity()
+    adminEntity.updateAt = Date.parse(new Date().toString()).toString()
+    adminEntity.username = updates.username || username
+    if (updates.password)
+      if (md5(updates.password) === password)
+        adminEntity.password = md5(updates.newPassword) || password
+      else
+        throw new ForbiddenError('Old password does not match')
+    await this.adminModel.update({ uuid: userId }, adminEntity)
+    return `Updated profile for user ${username}(${userId})`
   }
 
   async getHitories(page: number): Promise<Response<LogsEntity>> {
@@ -87,7 +75,7 @@ export default class DashboardService {
       const pages = await getPages<LogsEntity>(this.logsModel)
       return { items: result, next, pages }
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -96,7 +84,7 @@ export default class DashboardService {
       const result = await this.logsModel.findOne({ uuid: id })
       return result
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -107,7 +95,7 @@ export default class DashboardService {
       const pages = await getPages<RoutersEntity>(this.routersModel)
       return { items: result, next, pages }
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -116,7 +104,7 @@ export default class DashboardService {
       const result = await this.routersModel.findOne({ uuid: id })
       return result
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -132,7 +120,7 @@ export default class DashboardService {
       await this.routersModel.save(routersEntity)
       return `Generated a new hook ${generatedUuid}`
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -141,7 +129,7 @@ export default class DashboardService {
       await this.routersModel.clear()
       return `Cleared all hooks`
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -158,7 +146,7 @@ export default class DashboardService {
       await this.routersModel.update({ uuid: id }, routersEntity)
       return `Updated hook: ${id}`
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -167,7 +155,7 @@ export default class DashboardService {
       await this.routersModel.delete({ uuid: id })
       return `Deleted hook: ${id}`
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -180,7 +168,7 @@ export default class DashboardService {
       await this.keysModel.save(keysEntity)
       return `Generated a new key: ${generatedKey}`
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -189,7 +177,7 @@ export default class DashboardService {
       await this.keysModel.clear()
       return `Cleared all keys`
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -200,7 +188,7 @@ export default class DashboardService {
       const pages = await getPages<KeysEntity>(this.keysModel)
       return { items: result, next, pages }
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 
@@ -209,7 +197,7 @@ export default class DashboardService {
       await this.keysModel.delete({ value })
       return `Deleted key: ${value}`
     } catch (e) {
-      throw new InternalServerError(e)
+      throw new InternalServerError(e.message)
     }
   }
 }
