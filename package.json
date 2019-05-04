@@ -1,6 +1,6 @@
 {
   "name": "openhooks",
-  "version": "0.9.14",
+  "version": "0.9.18",
   "description": "🔱 A server for handling webhook requests.",
   "main": "lib/bin/cli.js",
   "scripts": {
