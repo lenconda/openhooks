@@ -211,36 +211,38 @@ export default class DashboardService {
     }
   }
 
-  async setAuthToHook(hook: string, key: string): Promise<string> {
+  async setAuthToHook(hook: string, keys: string[]): Promise<string> {
     try {
-      const authCount = await this.authsModel.count({ hookId: hook, key })
-      const keyCount = await this.keysModel.count({ value: key })
-      if (authCount !== 0)
-        return `The key ${key} is already set to /hooks/${hook}`
-      if (keyCount === 0) {
-        throw new NotFoundError(`There is no key valued ${key}`)
-        return
+      let length = keys.length
+      for (let key of keys) {
+        const authCount = await this.authsModel.count({ hookId: hook, key })
+        const keyCount = await this.keysModel.count({ value: key })
+        if (authCount !== 0) {
+          length -= 1
+          continue
+        }
+        if (keyCount === 0) {
+          length -= 1
+          continue
+        }
+        const authsEntity = new AuthsEntity()
+        authsEntity.hookId = hook
+        authsEntity.key = key
+        authsEntity.createTime = Date.parse(new Date().toString()).toString()
+        await this.authsModel.save(authsEntity)
       }
-      const authsEntity = new AuthsEntity()
-      authsEntity.hookId = hook
-      authsEntity.key = key
-      authsEntity.createTime = Date.parse(new Date().toString()).toString()
-      await this.authsModel.save(authsEntity)
-      return `Set key ${key} to /hooks/${hook}`
+
+      return `Set ${length} key${length === 0 ? '' : 's'} to /hooks/${hook}`
     } catch (e) {
       throw e
     }
   }
 
-  async unsetAuthToHook(hook: string, key: string): Promise<string> {
+  async unsetAuthToHook(hook: string, keys: string[]): Promise<string> {
     try {
-      const count = await this.authsModel.count({ hookId: hook, key })
-      if (count === 0) {
-        throw new NotFoundError(`There is not auth record matches current condition`)
-        return
-      }
-      await this.authsModel.delete({ hookId: hook, key })
-      return `Unset key ${key} from /hooks/${hook}`
+      for (let key of keys)
+        await this.authsModel.delete({ hookId: hook, key })
+      return `Unset ${keys.length} key${keys.length === 1 ? '' : 's'} from /hooks/${hook}`
     } catch (e) {
       throw e
     }
@@ -295,5 +297,5 @@ export interface HookInfoCreate {
 }
 
 export interface AuthInfo {
-  key: string
+  keys: string[]
 }

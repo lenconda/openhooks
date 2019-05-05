@@ -134,14 +134,14 @@ export default class DashboardController {
   @Authorized()
   @Post('/auth/:hook')
   async setAuthToHook(@Param('hook') hook: string, @Body() auth: AuthInfo) {
-    const result = await this.service.setAuthToHook(hook, auth.key)
+    const result = await this.service.setAuthToHook(hook, auth.keys)
     return result
   }
 
   @Authorized()
   @Delete('/auth/:hook')
   async unsetAuthToHook(@Param('hook') hook: string, @Body() auth: AuthInfo) {
-    const result = await this.service.unsetAuthToHook(hook, auth.key)
+    const result = await this.service.unsetAuthToHook(hook, auth.keys)
     return result
   }
 }
