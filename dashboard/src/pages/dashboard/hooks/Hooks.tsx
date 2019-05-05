@@ -334,7 +334,7 @@ class Hooks extends React.Component<Props, State> {
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title text-ellipsis">
-                    <i className="fa fa-edit"></i> Edit Hook {this.state.editUuid}
+                    <i className="fa fa-edit"></i> Edit Hook
                   </h5>
                   <button type="button" className="close" data-dismiss="modal"
                           aria-label="Close">
@@ -342,6 +342,11 @@ class Hooks extends React.Component<Props, State> {
                   </button>
                 </div>
                 <div className="modal-body">
+                  <div className="mb-2">
+                    <small>
+                      Current hook: {this.state.editUuid}
+                    </small>
+                  </div>
                   <div className="form-group">
                     <label>Shell command</label>
                     <code>
@@ -396,6 +401,11 @@ class Hooks extends React.Component<Props, State> {
                   </button>
                 </div>
                 <div className="modal-body">
+                  <div className="mb-2">
+                    <small>
+                      Current hook: /hooks/{this.state.manageKeysFor}
+                    </small>
+                  </div>
                   <div className="container-fluid">
                     <div className="row">
                       <div className="col">
