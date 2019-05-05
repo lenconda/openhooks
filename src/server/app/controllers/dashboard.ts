@@ -13,7 +13,8 @@ import {
 import DashboardService, {
   HookInfoCreate,
   HookInfoUpdate,
-  UserInfoUpdate } from '../services/dashboard'
+  UserInfoUpdate,
+  AuthInfo } from '../services/dashboard'
 import { Inject } from 'typedi'
 
 @JsonController('/api')
@@ -127,6 +128,20 @@ export default class DashboardController {
   @Delete('/key/:value')
   async deleteKey(@Param('value') value: string) {
     const result = await this.service.deleteKey(value)
+    return result
+  }
+
+  @Authorized()
+  @Post('/auth/:hook')
+  async setAuthToHook(@Param('hook') hook: string, @Body() auth: AuthInfo) {
+    const result = await this.service.setAuthToHook(hook, auth.key)
+    return result
+  }
+
+  @Authorized()
+  @Delete('/auth/:hook')
+  async unsetAuthToHook(@Param('hook') hook: string, @Body() auth: AuthInfo) {
+    const result = await this.service.unsetAuthToHook(hook, auth.key)
     return result
   }
 }

@@ -2,8 +2,8 @@ import { Service } from 'typedi'
 import {
   ForbiddenError,
   InternalServerError,
-  UnauthorizedError
-} from 'routing-controllers'
+  NotFoundError,
+  UnauthorizedError } from 'routing-controllers'
 import md5 from 'md5'
 import uuidv4 from 'uuid/v4'
 import uuidv1 from 'uuid/v1'
@@ -12,6 +12,7 @@ import AdminEntity from '../../../database/entity/admin'
 import LogsEntity from '../../../database/entity/logs'
 import RoutersEntity from '../../../database/entity/routers'
 import KeysEntity from '../../../database/entity/keys'
+import AuthsEntity from '../../../database/entity/auths'
 import jwt from 'jsonwebtoken'
 import { fetchWithPagination, hasNext, getPages } from '../../util/pagination'
 
@@ -22,12 +23,14 @@ export default class DashboardService {
     this.logsModel = getManager().getRepository(LogsEntity)
     this.routersModel = getManager().getRepository(RoutersEntity)
     this.keysModel = getManager().getRepository(KeysEntity)
+    this.authsModel = getManager().getRepository(AuthsEntity)
   }
 
   private adminModel: Repository<AdminEntity>
   private logsModel: Repository<LogsEntity>
   private routersModel: Repository<RoutersEntity>
   private keysModel: Repository<KeysEntity>
+  private authsModel: Repository<AuthsEntity>
 
   async login(username: string, password: string): Promise<LoginInfo> {
     const result =
@@ -88,12 +91,19 @@ export default class DashboardService {
     }
   }
 
-  async getHooks(page: number): Promise<Response<RoutersEntity>> {
+  async getHooks(page: number): Promise<Response<HookInfo>> {
     try {
       const result = await fetchWithPagination(page, this.routersModel)
       const next = await hasNext<RoutersEntity>(page, this.routersModel)
       const pages = await getPages<RoutersEntity>(this.routersModel)
-      return { items: result, next, pages }
+      const items: HookInfo[] = []
+      for (let item of result) {
+        const keysResult = await this.authsModel.find({ hookId: item.uuid })
+        const keys = keysResult.map((value, index) => value.key)
+        const hook: HookInfo = { ...item, keys }
+        items.push(hook)
+      }
+      return { items, next, pages }
     } catch (e) {
       throw new InternalServerError(e.message)
     }
@@ -200,6 +210,41 @@ export default class DashboardService {
       throw new InternalServerError(e.message)
     }
   }
+
+  async setAuthToHook(hook: string, key: string): Promise<string> {
+    try {
+      const authCount = await this.authsModel.count({ hookId: hook, key })
+      const keyCount = await this.keysModel.count({ value: key })
+      if (authCount !== 0)
+        return `The key ${key} is already set to /hooks/${hook}`
+      if (keyCount === 0) {
+        throw new NotFoundError(`There is no key valued ${key}`)
+        return
+      }
+      const authsEntity = new AuthsEntity()
+      authsEntity.hookId = hook
+      authsEntity.key = key
+      authsEntity.createTime = Date.parse(new Date().toString()).toString()
+      await this.authsModel.save(authsEntity)
+      return `Set key ${key} to /hooks/${hook}`
+    } catch (e) {
+      throw e
+    }
+  }
+
+  async unsetAuthToHook(hook: string, key: string): Promise<string> {
+    try {
+      const count = await this.authsModel.count({ hookId: hook, key })
+      if (count === 0) {
+        throw new NotFoundError(`There is not auth record matches current condition`)
+        return
+      }
+      await this.authsModel.delete({ hookId: hook, key })
+      return `Unset key ${key} from /hooks/${hook}`
+    } catch (e) {
+      throw e
+    }
+  }
 }
 
 export interface LoginInfo {
@@ -223,6 +268,10 @@ export interface Response<T> {
   pages: number
 }
 
+export interface HookInfo extends RoutersEntity {
+  keys: string[]
+}
+
 export interface HookInfoUpdate {
   description?: string
   command?: string
@@ -233,4 +282,8 @@ export interface HookInfoCreate {
   description: string
   command: string
   auth: boolean
+}
+
+export interface AuthInfo {
+  key: string
 }
