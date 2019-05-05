@@ -191,6 +191,15 @@ export default class DashboardService {
     }
   }
 
+  async getAllKeys(): Promise<Response<KeysEntity>> {
+    try {
+      const result = await this.keysModel.find()
+      return { items: result, next: false, pages: 1 }
+    } catch (e) {
+      throw new InternalServerError(e)
+    }
+  }
+
   async getKeys(page: number): Promise<Response<KeysEntity>> {
     try {
       const result = await fetchWithPagination(page, this.keysModel)

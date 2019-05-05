@@ -111,6 +111,13 @@ export default class DashboardController {
   }
 
   @Authorized()
+  @Get('/all_keys')
+  async getAllKeys() {
+    const result = await this.service.getAllKeys()
+    return result
+  }
+
+  @Authorized()
   @Post('/keys')
   async addKeys() {
     const result = await this.service.addKey()
