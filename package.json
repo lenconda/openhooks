@@ -76,6 +76,7 @@
   },
   "dependencies": {
     "@types/koa-static": "^4.0.1",
+    "@types/lodash": "^4.14.123",
     "commander": "^2.20.0",
     "daemonize2": "^0.4.2",
     "debug": "^2.6.3",
@@ -89,6 +90,7 @@
     "koa-logger": "^3.1.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
+    "lodash": "^4.17.11",
     "md5": "^2.2.1",
     "moment": "^2.24.0",
     "path-exists": "^4.0.0",

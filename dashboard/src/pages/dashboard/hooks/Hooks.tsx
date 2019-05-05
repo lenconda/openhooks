@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import http from '../../../util/http'
 import Pagination from '../../../components/pagination/Pagination'
 import { getFormattedTime } from '../../../util/time'
@@ -8,6 +9,7 @@ import {
 interface Props {
   match: any
 }
+
 interface State {
   next: boolean
   data: HookInfo[]
@@ -20,6 +22,11 @@ interface State {
   editCommand: string
   editDescription: string
   editAuthentication: string
+  keys: string[]
+  currentKeys: string[]
+  manageKeysFor: string
+  manageUsedKeys: string[]
+  manageUnusedKeys: string[]
 }
 
 class Hooks extends React.Component<Props, State> {
@@ -36,11 +43,17 @@ class Hooks extends React.Component<Props, State> {
       editUuid: '',
       editCommand: '',
       editDescription: '',
-      editAuthentication: ''
+      editAuthentication: '',
+      keys: [],
+      currentKeys: [],
+      manageKeysFor: '',
+      manageUnusedKeys: [],
+      manageUsedKeys: []
     }
   }
 
   componentDidMount(): void {
+    this.getKeys()
     this.getHooks(this.props.match.params.page)
   }
 
@@ -52,6 +65,17 @@ class Hooks extends React.Component<Props, State> {
     this.getHooks(nextProps.match.params.page)
   }
 
+  getKeys = () => {
+    http.get('/api/all_keys')
+    .then(res => {
+      if (res) {
+        const keys = res.data.data.items.map(
+            (value: any, index: number) => value.value)
+        this.setState({ keys })
+      }
+    })
+  }
+
   getHooks = (page: number) => {
     http.get(`/api/hooks?page=${page}`)
     .then(res => {
@@ -61,6 +85,49 @@ class Hooks extends React.Component<Props, State> {
           data: res.data.data.items,
           pages: res.data.data.pages
         })
+    })
+  }
+
+  handleManageKeys = (item: any) => {
+    this.setState({
+      manageKeysFor: item.uuid,
+      manageUsedKeys: item.keys,
+      currentKeys: item.keys,
+      manageUnusedKeys: _.difference(this.state.keys, item.keys)
+    })
+  }
+
+  addKeyToUsedKeys = (key: string) => {
+    this.setState({
+      manageUsedKeys: [...this.state.manageUsedKeys, key],
+      manageUnusedKeys: _.difference(this.state.keys, [...this.state.manageUsedKeys, key])
+    })
+  }
+
+  deleteKeyFromUsedKeys = (key: string) => {
+    this.setState({
+      manageUnusedKeys: [...this.state.manageUnusedKeys, key],
+      manageUsedKeys: _.difference(this.state.keys, [...this.state.manageUnusedKeys, key])
+    })
+  }
+
+  updateKeys = () => {
+    http.delete(`/api/auth/${this.state.manageKeysFor}`,
+        { data: { keys: _.difference(this.state.currentKeys, this.state.manageUsedKeys) } }).then(deleteRes => {
+          if (deleteRes)
+            http.post(`/api/auth/${this.state.manageKeysFor}`,
+                { keys: _.difference(this.state.manageUsedKeys, this.state.currentKeys) }).then(addRes => {
+                  if (addRes) {
+                    this.getKeys()
+                    this.getHooks(this.props.match.params.page)
+                    this.setState({
+                      currentKeys: [],
+                      manageKeysFor: '',
+                      manageUnusedKeys: [],
+                      manageUsedKeys: []
+                    })
+                  }
+            })
     })
   }
 
@@ -158,17 +225,25 @@ class Hooks extends React.Component<Props, State> {
                     </td>
                     <td>{getFormattedTime(item.updateTime)}</td>
                     <td>
-                      <button className="btn btn-sm btn-danger"
-                              onClick={() => {this.deleteHook(item.uuid)}}>
-                        <i className="fa fa-trash"></i> Delete
-                      </button>
+                      {
+                        !item.auth ? null :
+                            <button className="btn btn-sm btn-warning mx-1"
+                                    data-toggle="modal"
+                                    data-target="#manage_keys"
+                                    onClick={() => this.handleManageKeys(item)}>
+                              <i className="fa fa-key"></i> Manage Keys
+                            </button>
+                      }
                       <button type="button"
-                              className="btn btn-sm btn-warning"
+                              className="btn btn-sm btn-warning mx-1"
                               data-toggle="modal"
                               data-target="#edit_hook"
-                              style={{marginLeft: 5}}
                               onClick={() => this.handleEditHook(item)}>
                         <i className="fa fa-edit"></i> Edit
+                      </button>
+                      <button className="btn btn-sm btn-danger mx-1"
+                              onClick={() => {this.deleteHook(item.uuid)}}>
+                        <i className="fa fa-trash"></i> Delete
                       </button>
                     </td>
                   </tr>
@@ -301,6 +376,83 @@ class Hooks extends React.Component<Props, State> {
                       disabled={this.state.editAuthentication === ''
                       || this.state.editAuthentication === ''
                       || this.state.editAuthentication === ''}>
+                    <i className="fa fa-save"></i> Update
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal fade" id="manage_keys" role="dialog"
+               aria-labelledby="myModalLabel">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title text-ellipsis">
+                    <i className="fa fa-key"></i> Manage Keys
+                  </h5>
+                  <button type="button" className="close" data-dismiss="modal"
+                          aria-label="Close">
+                    <span aria-hidden="true" className="text-white">&times;</span>
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <div className="container-fluid">
+                    <div className="row">
+                      <div className="col">
+                        <ul className="nav nav-tabs">
+                          <li className="nav-item">
+                            <a className="nav-link active" href="#not_set" data-toggle="tab">Unused Keys</a>
+                          </li>
+                          <li className="nav-item">
+                            <a className="nav-link" href="#set" data-toggle="tab">Used Keys</a>
+                          </li>
+                        </ul>
+                        <div id="myTabContent" className="tab-content">
+                          <div className="tab-pane active" id="not_set">
+                            <ul className="list-group">
+                              {
+                                this.state.manageUnusedKeys.map(
+                                    (value, index) =>
+                                        <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                          {value}
+                                          <button className="btn btn-sm btn-success"
+                                                  onClick={() => this.addKeyToUsedKeys(value)}>
+                                            <span className="fa fa-plus"></span>
+                                          </button>
+                                        </li>
+                                )
+                              }
+                            </ul>
+                          </div>
+                          <div className="tab-pane" id="set">
+                            <ul className="list-group">
+                              {
+                                this.state.manageUsedKeys.map(
+                                    (value, index) =>
+                                        <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                          {value}
+                                          <button className="btn btn-sm btn-danger"
+                                                  onClick={() => this.deleteKeyFromUsedKeys(value)}>
+                                            <span className="fa fa-times"></span>
+                                          </button>
+                                        </li>
+                                )
+                              }
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-sm btn-primary" data-dismiss="modal" onClick={this.clearEditHook}>
+                    <i className="fa fa-times"></i> Cancel
+                  </button>
+                  <button
+                      className="btn btn-sm btn-success"
+                      data-dismiss="modal"
+                      onClick={this.updateKeys}>
                     <i className="fa fa-save"></i> Update
                   </button>
                 </div>
