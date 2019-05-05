@@ -236,24 +236,23 @@ class Hooks extends React.Component<Props, State> {
                     <td>
                       {
                         !item.auth ? null :
-                            <button className="btn btn-sm btn-warning mx-1"
+                            <a className="badge badge-success text-white mx-1"
                                     data-toggle="modal"
                                     data-target="#manage_keys"
                                     onClick={() => this.handleManageKeys(item)}>
                               <i className="fa fa-key"></i> Manage Keys
-                            </button>
+                            </a>
                       }
-                      <button type="button"
-                              className="btn btn-sm btn-warning mx-1"
-                              data-toggle="modal"
-                              data-target="#edit_hook"
-                              onClick={() => this.handleEditHook(item)}>
+                      <a className="badge badge-warning text-white mx-1"
+                         data-toggle="modal"
+                         data-target="#edit_hook"
+                         onClick={() => this.handleEditHook(item)}>
                         <i className="fa fa-edit"></i> Edit
-                      </button>
-                      <button className="btn btn-sm btn-danger mx-1"
+                      </a>
+                      <a className="badge badge-danger text-white mx-1"
                               onClick={() => {this.deleteHook(item.uuid)}}>
                         <i className="fa fa-trash"></i> Delete
-                      </button>
+                      </a>
                     </td>
                   </tr>
               )

@@ -83,12 +83,12 @@ class Histories extends React.Component<Props, State> {
                     <td><code>/hooks/{item.routerId}</code></td>
                     <td>{getFormattedTime(item.triggerTime)}</td>
                     <td>
-                      <button className="btn btn-primary btn-sm"
+                      <a className="badge badge-info text-white"
                               data-toggle="modal"
                               data-target="#view_result"
                               onClick={() => {this.handleViewHistory(item)}}>
-                        <i className="fa fa-eye"></i> View
-                      </button>
+                        <i className="fa fa-eye"></i> View result
+                      </a>
                     </td>
                     <td>
                       {

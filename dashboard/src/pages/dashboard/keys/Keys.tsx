@@ -109,10 +109,10 @@ class Keys extends React.Component<Props, State> {
                     <td><code>{item.value}</code></td>
                     <td>{getFormattedTime(item.createTime)}</td>
                     <td>
-                      <button className="btn btn-sm btn-danger"
+                      <a className="badge badge-danger text-white mx-1"
                               onClick={() => {this.deleteKey(item.value)}}>
                         <i className="fa fa-trash"></i> Delete
-                      </button>
+                      </a>
                     </td>
                   </tr>
               )
