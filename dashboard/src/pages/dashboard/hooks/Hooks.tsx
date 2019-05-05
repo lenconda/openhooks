@@ -240,7 +240,7 @@ class Hooks extends React.Component<Props, State> {
                                     data-toggle="modal"
                                     data-target="#manage_keys"
                                     onClick={() => this.handleManageKeys(item)}>
-                              <i className="fa fa-key"></i> Manage Keys
+                              <i className="fa fa-key"></i> Manage keys
                             </a>
                       }
                       <a className="badge badge-warning text-white mx-1"
@@ -268,13 +268,13 @@ class Hooks extends React.Component<Props, State> {
           <div className="mb-3">
             <button type="button" className="btn btn-success btn-sm"
                     data-toggle="modal" data-target="#add_hook">
-              <i className="fa fa-lightbulb"></i>&nbsp;Add a Hook
+              <i className="fa fa-lightbulb"></i>&nbsp;Add a hook
             </button>
             <button type="button"
                     className="btn btn-danger btn-sm"
                     style={{marginLeft: 10}}
                     onClick={this.clearHooks}>
-              <i className="fa fa-trash"></i>&nbsp;Clear All
+              <i className="fa fa-trash"></i>&nbsp;Clear all
             </button>
           </div>
           {this.renderTable()}
@@ -411,7 +411,7 @@ class Hooks extends React.Component<Props, State> {
                 <div className="modal-body">
                   <div className="mb-2">
                     <small>
-                      Current hook: /hooks/{this.state.manageKeysFor}
+                      Current hook: <a title="Tooltip">/hooks/{this.state.manageKeysFor}</a>
                     </small>
                   </div>
                   <div className="container-fluid">

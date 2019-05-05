@@ -129,13 +129,13 @@ class Keys extends React.Component<Props, State> {
             <button type="button"
                     onClick={this.generateKey}
                     className="btn btn-success btn-sm">
-              <i className="fa fa-key"></i>&nbsp;Generate Key
+              <i className="fa fa-key"></i>&nbsp;Generate key
             </button>
             <button type="button"
                     className="btn btn-danger btn-sm"
                     style={{marginLeft: 10}}
                     onClick={this.clearKeys}>
-              <i className="fa fa-trash"></i>&nbsp;Clear All
+              <i className="fa fa-trash"></i>&nbsp;Clear all
             </button>
           </div>
           {this.renderTable()}
