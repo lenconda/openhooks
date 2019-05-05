@@ -220,8 +220,17 @@ class Hooks extends React.Component<Props, State> {
                     <td><code>/hooks/{item.uuid}</code></td>
                     <td><code>{item.command}</code></td>
                     <td>{item.description}</td>
-                    <td className="text-center">
-                      {item.auth ? <i className="fa fa-check"></i> : <i className="fa fa-times"></i>}
+                    <td>
+                      {
+                        item.auth ?
+                            <span className="badge badge-success">
+                              <i className="fa fa-check"></i> Required
+                            </span>
+                            :
+                            <span className="badge badge-warning">
+                              <i className="fa fa-times"></i> Not required
+                            </span>
+                      }
                     </td>
                     <td>{getFormattedTime(item.updateTime)}</td>
                     <td>

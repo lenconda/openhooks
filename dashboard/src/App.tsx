@@ -22,7 +22,7 @@ class App extends React.Component {
               <Redirect to={'/dashboard'}/>
             </Switch>
           </Router>
-          <ToastsContainer position={ToastsContainerPosition.TOP_CENTER} store={ToastsStore}/>
+          <ToastsContainer position={ToastsContainerPosition.TOP_RIGHT} store={ToastsStore}/>
         </div>
     )
   }

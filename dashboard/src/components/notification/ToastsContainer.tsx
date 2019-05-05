@@ -20,6 +20,10 @@ export interface IToastsContainerProps {
   className?: string | string[]
 }
 
+export interface Status {
+  [key: string]: any
+}
+
 export interface IToastsContainerState {
   styles: any
   toasts: any[]
@@ -47,7 +51,7 @@ export class ToastsContainer extends Component<IToastsContainerProps, IToastsCon
       this.setState({ toasts: [toast].concat(this.state.toasts) })
       const timeout = setTimeout(() => {
         this.setState({ toasts: this.state.toasts.filter((t) => t.id !== toast.id) })
-      }, data.timer || 3000)
+      }, data.timer || 5000)
       this.timeoutArray.push(timeout)
     })
 
@@ -100,6 +104,12 @@ export class ToastsContainer extends Component<IToastsContainerProps, IToastsCon
   }
 
   private _renderContainer() {
+    const icon: Status = {
+      success: 'check-circle',
+      info: 'info-circle',
+      warning: 'exclamation-circle',
+      danger: 'times-circle'
+    }
     return (
       <div style={this.state.styles}
            className={'toasts-container ' + (this.props.className || '')}>
@@ -107,7 +117,10 @@ export class ToastsContainer extends Component<IToastsContainerProps, IToastsCon
           this.state.toasts.map((toast) => {
             return (
                 <div className={`alert alert-${toast.status} notification`} role="alert">
-                  {toast.message}
+                  <div className="icon">
+                    <i className={`fa fa-${icon[toast.status]}`}></i>&nbsp;
+                  </div>
+                  <div className="message">{toast.message}</div>
                 </div>
             )
           })

@@ -18,7 +18,6 @@ axios.interceptors.response.use(response => {
 }, error => {
   if (error.response.status === 401) {
     localStorage.removeItem('token')
-    ToastsStore.error('Login first, please')
     history.push('/login')
   } else {
     if (error.response.data.message)

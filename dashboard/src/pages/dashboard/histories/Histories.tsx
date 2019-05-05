@@ -93,10 +93,10 @@ class Histories extends React.Component<Props, State> {
                     <td>
                       {
                         item.succeeded ?
-                            <span className="badge badge-pill badge-success">
+                            <span className="badge badge-success">
                             <i className="fa fa-smile"></i> Succeded
                           </span> :
-                            <span className="badge badge-pill badge-danger">
+                            <span className="badge badge-danger">
                             <i className="fa fa-frown"></i> Failed
                           </span>
                       }

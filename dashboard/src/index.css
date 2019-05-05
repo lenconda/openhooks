@@ -62,7 +62,25 @@ pre {
 }
 
 .notification {
+  display: flex;
+  align-items: flex-start;
+  width: 20em;
+  max-width: 90vw;
   animation-name: fadeInUp;
-  animation-duration: .4s;
+  animation-duration: .2s;
   animation-fill-mode: both;
+}
+
+.notification > .icon {
+  height: 100%;
+  padding-right: .5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification > .message {
+  word-break: break-all;
+  white-space: pre-wrap;
+  text-overflow: initial;
 }

@@ -69,8 +69,8 @@ class Pagination extends React.Component<Props, State> {
               )
             }
             {
-              this.props.total <= 10 || this.getPages().pop() === this.props.total
-                  ? null : <li><button disabled>...</button></li>
+              this.props.total <= 10 || this.getPages().pop() === this.props.total ? null :
+                  <li className="page-item disabled"><a className="page-link">...</a></li>
             }
             <li className={`page-item ${this.props.current === this.props.total ? 'disabled' : ''}`}>
               <a className="page-link"

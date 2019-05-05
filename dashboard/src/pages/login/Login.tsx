@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { KeyboardEventHandler } from 'react'
 import './Login.css'
 import http from '../../util/http'
 import { history } from '../../App'
@@ -20,8 +20,6 @@ class Login extends React.Component<Props, State> {
     }
   }
 
-  state: State
-
   login = () => {
     const { username, password } = this.state
     http.post('/api/login', { username, password })
@@ -35,6 +33,11 @@ class Login extends React.Component<Props, State> {
         })
   }
 
+  handleKey = (e: any) => {
+    if (e.key === 'Enter')
+      this.login()
+  }
+
   render() {
     return (
         <div className="container">
@@ -44,10 +47,12 @@ class Login extends React.Component<Props, State> {
               <label htmlFor="inputEmail" className="sr-only">Username</label>
               <input type="email" className="form-control mb-3" placeholder="Username"
                      value={this.state.username}
+                     onKeyPress={this.handleKey}
                      onChange={e => this.setState({ username: e.target.value })}/>
               <label htmlFor="inputPassword" className="sr-only">Password</label>
               <input type="password" className="form-control mb-3" placeholder="Password"
                      value={this.state.password}
+                     onKeyUp={this.handleKey}
                      onChange={e => this.setState({ password: e.target.value })}/>
               <div className="checkbox mb-3">
                 <label>
