@@ -19,9 +19,7 @@
     "node": ">=8.12"
   },
   "bin": {
-    "openhooks-router": "lib/bin/cli_router.js",
-    "openhooks-server": "lib/bin/cli_server.js",
-    "openhooks-key": "lib/bin/cli_key.js"
+    "openhooks": "lib/bin/cli_server.js"
   },
   "keywords": [
     "webhook"
