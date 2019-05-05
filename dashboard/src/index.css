@@ -15,6 +15,10 @@ code {
   background-color: inherit;
 }
 
+pre {
+  overflow-x: auto;
+}
+
 *::-webkit-scrollbar { width: 0 !important }
 * { -ms-overflow-style: none; }
 * { overflow: -moz-scrollbars-none; }
