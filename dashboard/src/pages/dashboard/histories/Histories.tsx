@@ -2,24 +2,18 @@ import React from 'react'
 import http from '../../../util/http'
 import Pagination from '../../../components/pagination/Pagination'
 import { getFormattedTime } from '../../../util/time'
-
-interface HistoryItem {
-  uuid: string
-  routerId: string
-  triggerTime: string
-  result: string
-  succeeded: boolean
-}
+import {
+  HistoriesInfo } from '../../../../../src/server/app/services/dashboard'
 
 interface Props {
   match: any
 }
 interface State {
   next: boolean
-  data: HistoryItem[]
+  data: HistoriesInfo[]
   currentPage: number
   pages: number
-  currentHistory: HistoryItem
+  currentHistory: HistoriesInfo
 }
 
 class Histories extends React.Component<Props, State> {
@@ -64,7 +58,7 @@ class Histories extends React.Component<Props, State> {
     })
   }
 
-  handleViewHistory = (history: HistoryItem) => {
+  handleViewHistory = (history: HistoriesInfo) => {
     this.setState({
       currentHistory: history
     })

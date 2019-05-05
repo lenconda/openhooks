@@ -268,6 +268,16 @@ export interface Response<T> {
   pages: number
 }
 
+export interface APIResponse<T> {
+  status: number
+  message: number
+  data: Response<T>
+}
+
+export interface KeysInfo extends KeysEntity {}
+
+export interface HistoriesInfo extends LogsEntity {}
+
 export interface HookInfo extends RoutersEntity {
   keys: string[]
 }

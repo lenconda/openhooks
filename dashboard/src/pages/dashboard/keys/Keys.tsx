@@ -2,13 +2,15 @@ import React from 'react'
 import http from '../../../util/http'
 import Pagination from '../../../components/pagination/Pagination'
 import { getFormattedTime } from '../../../util/time'
+import {
+  KeysInfo } from '../../../../../src/server/app/services/dashboard'
 
 interface Props {
   match: any
 }
 interface State {
   next: boolean
-  data: any[]
+  data: KeysInfo[]
   currentPage: number
   pages: number
   createCommand: string
